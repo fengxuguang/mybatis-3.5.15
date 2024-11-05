@@ -102,8 +102,11 @@ public class XPathParser {
     this.document = createDocument(new InputSource(reader));
   }
 
+  // XPathParser 构造函数, XPath 对象为 XPathFactory 对象
   public XPathParser(InputStream inputStream, boolean validation, Properties variables) {
+    // 初始化 XPathParser 相关属性
     commonConstructor(validation, variables, null);
+    // 初始化 document, DocumentBuilderFactory 对象
     this.document = createDocument(new InputSource(inputStream));
   }
 

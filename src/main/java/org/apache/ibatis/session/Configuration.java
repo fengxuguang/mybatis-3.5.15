@@ -184,6 +184,7 @@ public class Configuration {
   }
 
   public Configuration() {
+    // 初始化别名注册器
     typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
     typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
 
