@@ -603,34 +603,55 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
     
+    /**
+     * 解析 mappers 标签
+     * @param context mappers 节点
+     * @throws Exception 异常
+     */
     private void mappersElement(XNode context) throws Exception {
+        // 全局配置中没有配置 mappers 节点时不处理
         if (context == null) {
             return;
         }
+        // 遍历子节点
         for (XNode child : context.getChildren()) {
+            // package 子节点
             if ("package".equals(child.getName())) {
+                // 获取 name 属性配置的包路径
                 String mapperPackage = child.getStringAttribute("name");
+                // 扫描指定的包, 并向 mapperRegistry 注册 mapper 接口
                 configuration.addMappers(mapperPackage);
             } else {
+                // 获取 mapper 节点的 resource、url、class 属性, 三个属性之间互斥
                 String resource = child.getStringAttribute("resource");
                 String url = child.getStringAttribute("url");
                 String mapperClass = child.getStringAttribute("class");
+                
+                // 如果 mapper 节点指定了 resource 或 url 属性, 则创建 XMLMapperBuilder 对象, 调用 parse 方法解析 mapper 文件
                 if (resource != null && url == null && mapperClass == null) {
+                    // 使用类路径
                     ErrorContext.instance().resource(resource);
+                    // 创建 XMLMapperBuilder 对象, 解析映射配置文件
                     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
                         XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource,
                                 configuration.getSqlFragments());
+                        // Mapper 解析器解析
                         mapperParser.parse();
                     }
                 } else if (resource == null && url != null && mapperClass == null) {
+                    // 使用 url 绝对路径
                     ErrorContext.instance().resource(url);
+                    // 创建 XMLMapperBuilder 对象, 解析映射配置文件
                     try (InputStream inputStream = Resources.getUrlAsStream(url)) {
                         XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url,
                                 configuration.getSqlFragments());
+                        // Mapper 解析器解析
                         mapperParser.parse();
                     }
                 } else if (resource == null && url == null && mapperClass != null) {
+                    // 如果 mapper 节点指定了 class 属性, 则向 MapperRegistry 注册该 mapper 接口
                     Class<?> mapperInterface = Resources.classForName(mapperClass);
+                    // 向 MapperRegistry 注册该 mapper 接口
                     configuration.addMapper(mapperInterface);
                 } else {
                     throw new BuilderException(
