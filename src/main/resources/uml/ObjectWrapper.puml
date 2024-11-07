@@ -1,0 +1,15 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface ObjectWrapper
+abstract class BaseWrapper
+class BeanWrapper
+class CollectionWrapper
+class MapWrapper
+
+ObjectWrapper <-- BaseWrapper
+ObjectWrapper <|-- CollectionWrapper
+BaseWrapper <|-- BeanWrapper
+BaseWrapper <|--MapWrapper
+
+@enduml

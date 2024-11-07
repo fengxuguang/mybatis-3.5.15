@@ -111,6 +111,12 @@ public class TypeAliasRegistry {
         registerAlias("ResultSet", ResultSet.class);
     }
     
+    /**
+     * 获取对象
+     * @param string 字符串
+     * @return Class 对象
+     * @param <T>
+     */
     @SuppressWarnings("unchecked")
     // throws class cast exception as well if types cannot be assigned
     public <T> Class<T> resolveAlias(String string) {
@@ -121,13 +127,16 @@ public class TypeAliasRegistry {
             // issue #748
             String key = string.toLowerCase(Locale.ENGLISH);
             Class<T> value;
+            // 判断别名 typeAliases 缓存中是否存在
             if (typeAliases.containsKey(key)) {
                 value = (Class<T>) typeAliases.get(key);
             } else {
+                // 如果不存在，则通过反射获取
                 value = (Class<T>) Resources.classForName(string);
             }
             return value;
         } catch (ClassNotFoundException e) {
+            // 找不到这个类, 则抛出异常
             throw new TypeException("Could not resolve type alias '" + string + "'.  Cause: " + e, e);
         }
     }

@@ -324,18 +324,34 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
     
+    /**
+     * 解析 objectWrapperFactory 节点
+     * @param context objectWrapperFactory 节点
+     * @throws Exception 异常
+     */
     private void objectWrapperFactoryElement(XNode context) throws Exception {
         if (context != null) {
+            // 获取 objectWrapperFactory 节点的 type 属性
             String type = context.getStringAttribute("type");
+            // 通过反射创建 ObjectWrapperFactory 对象
             ObjectWrapperFactory factory = (ObjectWrapperFactory) resolveClass(type).getDeclaredConstructor().newInstance();
+            // 设置到 configuration 的 objectWrapperFactory 属性中
             configuration.setObjectWrapperFactory(factory);
         }
     }
     
+    /**
+     * 解析 reflectorFactory 节点
+     * @param context reflectorFactory 节点
+     * @throws Exception 异常
+     */
     private void reflectorFactoryElement(XNode context) throws Exception {
         if (context != null) {
+            // 获取 reflectorFactory 节点的 type 属性
             String type = context.getStringAttribute("type");
+            // 通过反射创建 ReflectorFactory 对象
             ReflectorFactory factory = (ReflectorFactory) resolveClass(type).getDeclaredConstructor().newInstance();
+            // 设置到 configuration 的 reflectorFactory 属性中
             configuration.setReflectorFactory(factory);
         }
     }
@@ -383,79 +399,140 @@ public class XMLConfigBuilder extends BaseBuilder {
         configuration.setVariables(defaults);
     }
     
+    /**
+     * settings 标签对应的 Properties 对象处理
+     * @param props Properties 对象
+     */
     private void settingsElement(Properties props) {
+        // 如何自动映射列到字段/属性
         configuration
                 .setAutoMappingBehavior(AutoMappingBehavior.valueOf(props.getProperty("autoMappingBehavior", "PARTIAL")));
+        // 自动映射未知的列
         configuration.setAutoMappingUnknownColumnBehavior(
                 AutoMappingUnknownColumnBehavior.valueOf(props.getProperty("autoMappingUnknownColumnBehavior", "NONE")));
+        // 缓存
         configuration.setCacheEnabled(booleanValueOf(props.getProperty("cacheEnabled"), true));
+        // 延迟加载的核心技术: 代理模式, CGLIB/JAVASSIST 代理
         configuration.setProxyFactory((ProxyFactory) createInstance(props.getProperty("proxyFactory")));
+        // 延迟加载
         configuration.setLazyLoadingEnabled(booleanValueOf(props.getProperty("lazyLoadingEnabled"), false));
+        // 延迟加载时, 每种属性是否还要按需加载
         configuration.setAggressiveLazyLoading(booleanValueOf(props.getProperty("aggressiveLazyLoading"), false));
+        // 允不允许多种结果集从一个单独的语句中返回
         configuration.setMultipleResultSetsEnabled(booleanValueOf(props.getProperty("multipleResultSetsEnabled"), true));
+        // 使用列标签代替列名
         configuration.setUseColumnLabel(booleanValueOf(props.getProperty("useColumnLabel"), true));
+        // 允许 JDBC 支持生成的键
         configuration.setUseGeneratedKeys(booleanValueOf(props.getProperty("useGeneratedKeys"), false));
+        // 配置默认的执行器
         configuration.setDefaultExecutorType(ExecutorType.valueOf(props.getProperty("defaultExecutorType", "SIMPLE")));
+        // 配置默认的超时时间
         configuration.setDefaultStatementTimeout(integerValueOf(props.getProperty("defaultStatementTimeout"), null));
+        // 默认获取的结果条数
         configuration.setDefaultFetchSize(integerValueOf(props.getProperty("defaultFetchSize"), null));
+        // 默认的 ResultSet 类型
         configuration.setDefaultResultSetType(resolveResultSetType(props.getProperty("defaultResultSetType")));
+        // 是否将 DB 字段自动映射到驼峰命名属性上(user_name --> userName)
         configuration.setMapUnderscoreToCamelCase(booleanValueOf(props.getProperty("mapUnderscoreToCamelCase"), false));
+        // 嵌套语句上使用 RowRounds
         configuration.setSafeRowBoundsEnabled(booleanValueOf(props.getProperty("safeRowBoundsEnabled"), false));
+        // 默认使用 Session 级别的缓存
         configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope", "SESSION")));
+        // 为 NULL 值设置 jdbcType
         configuration.setJdbcTypeForNull(JdbcType.valueOf(props.getProperty("jdbcTypeForNull", "OTHER")));
+        // Object 的哪些方法将触发延迟加载
         configuration.setLazyLoadTriggerMethods(
                 stringSetValueOf(props.getProperty("lazyLoadTriggerMethods"), "equals,clone,hashCode,toString"));
+        // 使用安全的 ResultHandler
         configuration.setSafeResultHandlerEnabled(booleanValueOf(props.getProperty("safeResultHandlerEnabled"), true));
+        // 动态 SQL 生成语言所使用的脚本语言
         configuration.setDefaultScriptingLanguage(resolveClass(props.getProperty("defaultScriptingLanguage")));
+        // 枚举类型处理器
         configuration.setDefaultEnumTypeHandler(resolveClass(props.getProperty("defaultEnumTypeHandler")));
+        // 当结果集中含有 NULL 值时是否执行映射对象的 setter 或者 Map 对象的 put 方法. 此设置对于原始类型的, 如: int、boolean 等无效
         configuration.setCallSettersOnNulls(booleanValueOf(props.getProperty("callSettersOnNulls"), false));
+        // 是否使用实际参数名称
         configuration.setUseActualParamName(booleanValueOf(props.getProperty("useActualParamName"), true));
+        // 返回实例是否返回空对象
         configuration.setReturnInstanceForEmptyRow(booleanValueOf(props.getProperty("returnInstanceForEmptyRow"), false));
+        // logger 名字的前缀
         configuration.setLogPrefix(props.getProperty("logPrefix"));
+        // 配置工厂
         configuration.setConfigurationFactory(resolveClass(props.getProperty("configurationFactory")));
+        // 是否在 SQL 中使用缩进
         configuration.setShrinkWhitespacesInSql(booleanValueOf(props.getProperty("shrinkWhitespacesInSql"), false));
+        // 启用参数名称自动映射
         configuration.setArgNameBasedConstructorAutoMapping(
                 booleanValueOf(props.getProperty("argNameBasedConstructorAutoMapping"), false));
+        // 默认的 sql provider 类型
         configuration.setDefaultSqlProviderType(resolveClass(props.getProperty("defaultSqlProviderType")));
+        // 默认的 forEach 节点是否允许 null
         configuration.setNullableOnForEach(booleanValueOf(props.getProperty("nullableOnForEach"), false));
     }
     
+    /**
+     * 解析 environments 节点
+     * @param context environments 节点
+     * @throws Exception 异常
+     */
     private void environmentsElement(XNode context) throws Exception {
+        // environments 标签为空时不处理
         if (context == null) {
             return;
         }
+        // 判断环境变量是否为空, 若为空则使用 default 属性
         if (environment == null) {
             environment = context.getStringAttribute("default");
         }
+        // 遍历子节点
         for (XNode child : context.getChildren()) {
+            // 获取 environments 节点的 id 属性值
             String id = child.getStringAttribute("id");
+            // 与 XMLConfigBuilder.environment 字段匹配
             if (isSpecifiedEnvironment(id)) {
+                // 创建 TransactionFactory 事务工厂
                 TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
+                // 创建数据源工厂
                 DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
+                // 创建数据源
                 DataSource dataSource = dsFactory.getDataSource();
+                // 创建 Builder, 包含事务工厂与数据源
                 Environment.Builder environmentBuilder = new Environment.Builder(id).transactionFactory(txFactory)
                         .dataSource(dataSource);
+                // 将 Environment 对象添加到 Configuration 中
                 configuration.setEnvironment(environmentBuilder.build());
                 break;
             }
         }
     }
     
+    /**
+     * 解析 databaseIdProvider 节点
+     * @param context databaseIdProvider 节点
+     * @throws Exception 异常
+     */
     private void databaseIdProviderElement(XNode context) throws Exception {
+        // 全局配置中没有配置 databaseIdProvider 节点时不处理
         if (context == null) {
             return;
         }
+        // 获取 databaseIdProvider 节点的 type 属性值
         String type = context.getStringAttribute("type");
         // awful patch to keep backward compatibility
+        // 与老版本兼容
         if ("VENDOR".equals(type)) {
             type = "DB_VENDOR";
         }
+        // 解析子节点配置信息
         Properties properties = context.getChildrenAsProperties();
+        // 创建 DatabaseIdProvider 对象
         DatabaseIdProvider databaseIdProvider = (DatabaseIdProvider) resolveClass(type).getDeclaredConstructor()
                 .newInstance();
+        // 配置 DatabaseIdProvider, 完成初始化
         databaseIdProvider.setProperties(properties);
         Environment environment = configuration.getEnvironment();
         if (environment != null) {
+            // 通过 dataSource 获取 databaseId 并记录到 configuration.databaseId 属性中
             String databaseId = databaseIdProvider.getDatabaseId(environment.getDataSource());
             configuration.setDatabaseId(databaseId);
         }
@@ -483,21 +560,36 @@ public class XMLConfigBuilder extends BaseBuilder {
         throw new BuilderException("Environment declaration requires a DataSourceFactory.");
     }
     
+    /**
+     * 解析 typeHandler 节点
+     * @param context typeHandler 节点
+     */
     private void typeHandlersElement(XNode context) {
+        // 全局配置中没有配置 typeHandler 节点时不处理
         if (context == null) {
             return;
         }
+        // 遍历子节点
         for (XNode child : context.getChildren()) {
+            // 指定 package
             if ("package".equals(child.getName())) {
                 String typeHandlerPackage = child.getStringAttribute("name");
+                // 调用 TypeHandlerRegistry.register 方法去注册该包下所有类
                 typeHandlerRegistry.register(typeHandlerPackage);
             } else {
+                // 获取 Java 的数据类型名称
                 String javaTypeName = child.getStringAttribute("javaType");
+                // 获取 jdbc 的数据类型名称
                 String jdbcTypeName = child.getStringAttribute("jdbcType");
+                // 获取类型处理类的全限定名
                 String handlerTypeName = child.getStringAttribute("handler");
+                // 解析 java 数据类型的 Class 对象
                 Class<?> javaTypeClass = resolveClass(javaTypeName);
+                // 解析获取 JDBC 数据类型
                 JdbcType jdbcType = resolveJdbcType(jdbcTypeName);
+                // 解析获取类型处理类的 Class 对象
                 Class<?> typeHandlerClass = resolveClass(handlerTypeName);
+                // 调用 TypeHandlerRegistry.register 的重载方法(以下 3 种方式)
                 if (javaTypeClass != null) {
                     if (jdbcType == null) {
                         typeHandlerRegistry.register(javaTypeClass, typeHandlerClass);
