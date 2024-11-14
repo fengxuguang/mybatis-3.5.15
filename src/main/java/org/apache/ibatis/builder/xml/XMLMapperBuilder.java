@@ -156,20 +156,33 @@ public class XMLMapperBuilder extends BaseBuilder {
         }
     }
     
+    /**
+     * 构建 select、insert、update、delete 节点
+     * @param list select、insert、update、delete 节点
+     */
     private void buildStatementFromContext(List<XNode> list) {
+        // 若有指定的 databaseId, 则只解析对应 databaseId 的语句
         if (configuration.getDatabaseId() != null) {
             buildStatementFromContext(list, configuration.getDatabaseId());
         }
         buildStatementFromContext(list, null);
     }
     
+    /**
+     * 构建语句
+     * @param list select、insert、update、delete 节点
+     * @param requiredDatabaseId databaseId
+     */
     private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
         for (XNode context : list) {
+            // 构建所有语句, 一个 mapper 下可以有很多 select
             final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context,
                     requiredDatabaseId);
             try {
+                // 核心 XMLStatementBuilder.parseStatementNode() 方法
                 statementParser.parseStatementNode();
             } catch (IncompleteElementException e) {
+                // 如果出现 SQL 语句不完整, 把它记下来, 塞到 configuration 的 incompleteStatements 属性中
                 configuration.addIncompleteStatement(statementParser);
             }
         }
@@ -303,12 +316,13 @@ public class XMLMapperBuilder extends BaseBuilder {
      * 解析 resultMap 节点
      * @param resultMapNode resultMap 节点
      * @param additionalResultMappings 其他结果映射
-     * @param enclosingType
-     * @return
+     * @param enclosingType 封闭类型
+     * @return ResultMap
      */
     private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings,
                                        Class<?> enclosingType) {
         ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
+        // 获取类型, 优先级为: type > ofType > resultType > javaType
         String type = resultMapNode.getStringAttribute("type",
                 resultMapNode.getStringAttribute(
                         "ofType",
@@ -318,7 +332,9 @@ public class XMLMapperBuilder extends BaseBuilder {
                         )
                 )
         );
+        // 获取到类型对应的 Class 对象
         Class<?> typeClass = resolveClass(type);
+        // 如果类型别名注册器中不存在
         if (typeClass == null) {
             typeClass = inheritEnclosingType(resultMapNode, enclosingType);
         }
@@ -354,6 +370,12 @@ public class XMLMapperBuilder extends BaseBuilder {
         }
     }
     
+    /**
+     * 继承封闭类型
+     * @param resultMapNode
+     * @param enclosingType
+     * @return
+     */
     protected Class<?> inheritEnclosingType(XNode resultMapNode, Class<?> enclosingType) {
         if ("association".equals(resultMapNode.getName()) && resultMapNode.getStringAttribute("resultMap") == null) {
             String property = resultMapNode.getStringAttribute("property");
@@ -482,20 +504,28 @@ public class XMLMapperBuilder extends BaseBuilder {
         }
     }
     
+    /**
+     * 绑定映射器 namespace
+     */
     private void bindMapperForNamespace() {
+        // 获取映射配置文件的命名空间
         String namespace = builderAssistant.getCurrentNamespace();
         if (namespace != null) {
             Class<?> boundType = null;
             try {
+                // 解析命名空间对应的类型
                 boundType = Resources.classForName(namespace);
             } catch (ClassNotFoundException e) {
                 // ignore, bound type is not required
             }
+            // 判断是否已经加载了 boundType 接口
             if (boundType != null && !configuration.hasMapper(boundType)) {
                 // Spring may not know the real resource name so we set a flag
                 // to prevent loading again this resource from the mapper interface
                 // look at MapperAnnotationBuilder#loadXmlResource
+                // 追加 namespace 前缀, 并添加到 loadedResources 集合中保存
                 configuration.addLoadedResource("namespace:" + namespace);
+                // 调用 MapperRegistry.addMapper 方法, 注册 boundType 接口
                 configuration.addMapper(boundType);
             }
         }

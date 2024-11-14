@@ -34,6 +34,10 @@ import org.apache.ibatis.session.SqlSession;
 public class MapperRegistry {
     
     private final Configuration config;
+    
+    /**
+     * 记录 Mapper 接口与对应 MapperProxyFactory 的映射关系
+     */
     private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new ConcurrentHashMap<>();
     
     public MapperRegistry(Configuration config) {
@@ -57,21 +61,34 @@ public class MapperRegistry {
         return knownMappers.containsKey(type);
     }
     
+    /**
+     * 添加 Mapper 映射器
+     * @param type 映射器
+     * @param <T> 泛型
+     */
     public <T> void addMapper(Class<T> type) {
+        // 判断 type 是否为接口
         if (type.isInterface()) {
+            // 判断是否已经存在
             if (hasMapper(type)) {
                 throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
             }
+            // 加载完成标识
             boolean loadCompleted = false;
             try {
+                // 将 Mapper 接口对应的 Class 对象和 MapperProxyFactory 对象添加到 knownMappers 集合中
+                // Map<CLass<?>, MapperProxyFactory<?>> 存放的是接口类型, 和对应的工厂类的关系
                 knownMappers.put(type, new MapperProxyFactory<>(type));
                 // It's important that the type is added before the parser is run
                 // otherwise the binding may automatically be attempted by the
                 // mapper parser. If the type is already known, it won't try.
+                // 创建 MapperAnnotationBuilder 对象用于解析
                 MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+                // 根据接口, 开始解析所有方法上的注解, 如: @Select、@Insert ... 等
                 parser.parse();
                 loadCompleted = true;
             } finally {
+                // 如果加载过程中出现异常需要将这个 mapper 从 mybatis 中移除
                 if (!loadCompleted) {
                     knownMappers.remove(type);
                 }

@@ -69,7 +69,9 @@ public final class MappedStatement {
       mappedStatement.configuration = configuration;
       mappedStatement.id = id;
       mappedStatement.sqlSource = sqlSource;
+      // 默认 statementType 设置为 PREPARED
       mappedStatement.statementType = StatementType.PREPARED;
+      // resultSetType 默认设置为 DEFAULT
       mappedStatement.resultSetType = ResultSetType.DEFAULT;
       mappedStatement.parameterMap = new ParameterMap.Builder(configuration, "defaultParameterMap", null,
           new ArrayList<>()).build();

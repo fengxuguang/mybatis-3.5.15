@@ -54,6 +54,7 @@ import org.apache.ibatis.type.TypeHandler;
  */
 public class MapperBuilderAssistant extends BaseBuilder {
     
+    // 当前 namespace
     private String currentNamespace;
     private final String resource;
     private Cache currentCache;
@@ -69,6 +70,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return currentNamespace;
     }
     
+    /**
+     * 设置当前 namespace 值
+     * @param currentNamespace namespace 值
+     */
     public void setCurrentNamespace(String currentNamespace) {
         if (currentNamespace == null) {
             throw new BuilderException("The mapper element requires a namespace attribute to be specified.");
@@ -151,6 +156,16 @@ public class MapperBuilderAssistant extends BaseBuilder {
                 .resultMapId(resultMap).mode(parameterMode).numericScale(numericScale).typeHandler(typeHandlerInstance).build();
     }
     
+    /**
+     * 添加 ResultMap 进 resultMaps 属性中
+     * @param id
+     * @param type
+     * @param extend
+     * @param discriminator
+     * @param resultMappings
+     * @param autoMapping
+     * @return
+     */
     public ResultMap addResultMap(String id, Class<?> type, String extend, Discriminator discriminator,
                                   List<ResultMapping> resultMappings, Boolean autoMapping) {
         id = applyCurrentNamespace(id, false);
@@ -199,6 +214,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return new Discriminator.Builder(configuration, resultMapping, namespaceDiscriminatorMap).build();
     }
     
+    /**
+     * 添加 MappedStatement 到 configuration 的 mappedStatements 属性中
+     */
     public MappedStatement addMappedStatement(String id, SqlSource sqlSource, StatementType statementType,
                                               SqlCommandType sqlCommandType, Integer fetchSize, Integer timeout, String parameterMap, Class<?> parameterType,
                                               String resultMap, Class<?> resultType, ResultSetType resultSetType, boolean flushCache, boolean useCache,
@@ -223,7 +241,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
             statementBuilder.parameterMap(statementParameterMap);
         }
         
+        // 创建 MappedStatement 对象
         MappedStatement statement = statementBuilder.build();
+        // 将 mappedStatement 添加至配置类 configuration 类的 mappedStatement 属性中
         configuration.addMappedStatement(statement);
         return statement;
     }
