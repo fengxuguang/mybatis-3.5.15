@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface SqlSession
+class DefaultSqlSession
+class SqlSessionManager
+
+SqlSession <|-- DefaultSqlSession
+SqlSession <|-- SqlSessionManager
+
+
+@enduml

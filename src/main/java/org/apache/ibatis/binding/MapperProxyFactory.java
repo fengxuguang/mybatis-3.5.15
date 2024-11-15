@@ -52,7 +52,11 @@ public class MapperProxyFactory<T> {
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
     }
     
+    /**
+     * 创建接口代理对象
+     */
     public T newInstance(SqlSession sqlSession) {
+        // 创建 MapperProxy 对象, 每次调用都会创建新的 MapperProxy 对象
         final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface, methodCache);
         return newInstance(mapperProxy);
     }

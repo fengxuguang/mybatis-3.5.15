@@ -497,7 +497,8 @@ public class XMLConfigBuilder extends BaseBuilder {
                 // 创建数据源
                 DataSource dataSource = dsFactory.getDataSource();
                 // 创建 Builder, 包含事务工厂与数据源
-                Environment.Builder environmentBuilder = new Environment.Builder(id).transactionFactory(txFactory)
+                Environment.Builder environmentBuilder = new Environment.Builder(id)
+                        .transactionFactory(txFactory)
                         .dataSource(dataSource);
                 // 将 Environment 对象添加到 Configuration 中
                 configuration.setEnvironment(environmentBuilder.build());

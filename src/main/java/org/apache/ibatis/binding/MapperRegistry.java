@@ -44,13 +44,19 @@ public class MapperRegistry {
         this.config = config;
     }
     
+    /**
+     * 获取 Mapper 接口对象
+     */
     @SuppressWarnings("unchecked")
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        // 获取指定 type 对应的 MapperProxyFactory 对象
         final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
+        // 如果 mapperProxyFactory 为空, 则抛出异常
         if (mapperProxyFactory == null) {
             throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
         }
         try {
+            // 创建实现了 type 接口的代理对象
             return mapperProxyFactory.newInstance(sqlSession);
         } catch (Exception e) {
             throw new BindingException("Error getting mapper instance. Cause: " + e, e);
