@@ -47,8 +47,12 @@ public class MapperProxyFactory<T> {
         return methodCache;
     }
     
+    /**
+     * 使用 JDK 动态代理完成接口代理对象的创建
+     */
     @SuppressWarnings("unchecked")
     protected T newInstance(MapperProxy<T> mapperProxy) {
+        // 创建实现了 MapperInterface 接口的代理对象
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
     }
     

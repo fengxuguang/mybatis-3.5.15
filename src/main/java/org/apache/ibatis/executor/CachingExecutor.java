@@ -80,6 +80,7 @@ public class CachingExecutor implements Executor {
     
     @Override
     public int update(MappedStatement ms, Object parameterObject) throws SQLException {
+        // 刷新缓存
         flushCacheIfRequired(ms);
         return delegate.update(ms, parameterObject);
     }
@@ -93,28 +94,44 @@ public class CachingExecutor implements Executor {
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler)
             throws SQLException {
+        // 创建 BoundSql 对象, 包含目标执行 SQL、参数信息
         BoundSql boundSql = ms.getBoundSql(parameterObject);
+        // 创建 CacheKey 对象, 用来命中缓存
         CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
+        
+        // 查询
         return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
     }
     
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler,
                              CacheKey key, BoundSql boundSql) throws SQLException {
+        // 获取查询语句所在命名空间对应的的二级缓存
         Cache cache = ms.getCache();
+        
+        // 是否开启了二级缓存
         if (cache != null) {
+            // 根据 select 节点的配置, 决定是否需要清空二级缓存
             flushCacheIfRequired(ms);
+            // 检测 SQL 节点的 useCache 配置以及是否使用了 resultHandler 配置
             if (ms.isUseCache() && resultHandler == null) {
+                // 二级缓存不能保存输出类型的参数, 如果查询操作调用了包含输出参数的存储过程, 则报错
                 ensureNoOutParams(ms, boundSql);
+                
+                // 查询二级缓存
                 @SuppressWarnings("unchecked")
                 List<E> list = (List<E>) tcm.getObject(cache, key);
                 if (list == null) {
+                    // 二级缓存没有相应的结果时, 调用封装的 Executor 对象的 query 方法(装饰器模式), 此时去一级缓存查询
                     list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+                    // 将查询结果保存到 TransactionalCache.entriesToAddOnCommit 集合中
                     tcm.putObject(cache, key, list); // issue #578 and #116
                 }
                 return list;
             }
         }
+        
+        // 没有启动二级缓存, 直接调用底层 Executor 执行数据库查询操作
         return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
     }
     

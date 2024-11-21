@@ -213,6 +213,9 @@ public final class TypeHandlerRegistry {
         return hasTypeHandler(javaTypeReference, null);
     }
     
+    /**
+     * 判断类型处理注册器中的类型处理器是否可以处理 javaType、jdbcType
+     */
     public boolean hasTypeHandler(Class<?> javaType, JdbcType jdbcType) {
         return javaType != null && getTypeHandler((Type) javaType, jdbcType) != null;
     }
@@ -250,15 +253,18 @@ public final class TypeHandlerRegistry {
         if (ParamMap.class.equals(type)) {
             return null;
         }
+        // 查找或初始化 Java 类型对应的 TypeHandler 集合
         Map<JdbcType, TypeHandler<?>> jdbcHandlerMap = getJdbcHandlerMap(type);
         TypeHandler<?> handler = null;
         if (jdbcHandlerMap != null) {
+            // 根据 JdbcType 类型查找 TypeHandler 对象
             handler = jdbcHandlerMap.get(jdbcType);
             if (handler == null) {
                 handler = jdbcHandlerMap.get(null);
             }
             if (handler == null) {
                 // #591
+                // 如果 jdbcHandlerMap 只注册了一个 TypeHandler, 则使用此 TypeHandler 对象
                 handler = pickSoleHandler(jdbcHandlerMap);
             }
         }
@@ -267,8 +273,10 @@ public final class TypeHandlerRegistry {
     }
     
     private Map<JdbcType, TypeHandler<?>> getJdbcHandlerMap(Type type) {
+        // 查找指定 Java 类型对应 TypeHandler 集合
         Map<JdbcType, TypeHandler<?>> jdbcHandlerMap = typeHandlerMap.get(type);
         if (jdbcHandlerMap != null) {
+            // 检测是否为空集合标识
             return NULL_TYPE_HANDLER_MAP.equals(jdbcHandlerMap) ? null : jdbcHandlerMap;
         }
         if (type instanceof Class) {

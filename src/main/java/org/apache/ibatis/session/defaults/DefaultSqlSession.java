@@ -163,8 +163,10 @@ public class DefaultSqlSession implements SqlSession {
     
     private <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds, ResultHandler handler) {
         try {
+            // 根据 statement id 找对对应的 MappedStatement
             MappedStatement ms = configuration.getMappedStatement(statement);
             dirty |= ms.isDirtySelect();
+            // 如果 cacheEnabled = true(默认), Executor 会被 CachingExecutor 装饰(二级缓存)
             return executor.query(ms, wrapCollection(parameter), rowBounds, handler);
         } catch (Exception e) {
             throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);

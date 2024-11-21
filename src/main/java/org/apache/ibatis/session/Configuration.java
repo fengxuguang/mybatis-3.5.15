@@ -703,24 +703,41 @@ public class Configuration {
         return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
     }
     
+    /**
+     * 创建参数处理器
+     */
     public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject,
                                                 BoundSql boundSql) {
+        // 创建 ParameterHandler
         ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement,
                 parameterObject, boundSql);
+        
+        // 设置插件
         return (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
     }
     
+    /**
+     * 创建返回值处理器
+     */
     public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds,
                                                 ParameterHandler parameterHandler, ResultHandler resultHandler, BoundSql boundSql) {
+        // 创建 DefaultResultSetHandler
         ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler,
                 resultHandler, boundSql, rowBounds);
+        
+        // 设置插件
         return (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
     }
     
+    /**
+     * 创建语句处理器
+     */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement,
                                                 Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+        // 创建路由选择语句处理器, 根据 statementType 创建不同类型的 StatementHandler
         StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
                 rowBounds, resultHandler, boundSql);
+        // 植入插件
         return (StatementHandler) interceptorChain.pluginAll(statementHandler);
     }
     
@@ -917,6 +934,7 @@ public class Configuration {
     }
     
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        // 调用 MapperRegistry#getMapper()
         return mapperRegistry.getMapper(type, sqlSession);
     }
     
