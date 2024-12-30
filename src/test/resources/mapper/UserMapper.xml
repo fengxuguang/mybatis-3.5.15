@@ -35,6 +35,10 @@
         update user set name = #{name} where id = #{id}
     </update>
 
+    <update id="setName">
+        update user set name = #{name} where id = #{id}
+    </update>
+
     <delete id="deleteUserInfo" parameterType="org.apache.ibatis.debug.entity.User">
         delete from user where id = #{id}
     </delete>

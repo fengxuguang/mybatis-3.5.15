@@ -31,6 +31,8 @@
     <!--开启驼峰模式-->
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!-- 配置缓存作用域 -->
+        <setting name="localCacheScope" value="SESSION"/>
     </settings>
     <!--数据库连接环境设置-->
     <environments default="development">

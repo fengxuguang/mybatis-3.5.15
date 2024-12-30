@@ -17,6 +17,8 @@ package org.apache.ibatis.debug.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.debug.entity.User;
 
 /**
@@ -33,6 +35,14 @@ public interface UserMapper {
 	 * @return
 	 */
 	User selectUserById(String id);
+
+	/**
+	 * 更新用户名称
+	 * @param userId
+	 * @param userName
+	 */
+	@Options(flushCache = Options.FlushCachePolicy.TRUE)
+	void setName(@Param("id") String userId, @Param("name") String userName);
 
 	/**
 	 * 新增用户

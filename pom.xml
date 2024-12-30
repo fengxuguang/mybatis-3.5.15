@@ -260,10 +260,16 @@
             <version>42.7.1</version>
             <scope>test</scope>
         </dependency>
+        <!--    <dependency>-->
+        <!--      <groupId>com.mysql</groupId>-->
+        <!--      <artifactId>mysql-connector-j</artifactId>-->
+        <!--      <version>8.2.0</version>-->
+        <!--      <scope>test</scope>-->
+        <!--    </dependency>-->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.2.0</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -382,11 +388,11 @@
                 </configuration>
             </plugin>
             <!-- Do not run pdf plugin as not compliant with site 2.0
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-pdf-plugin</artifactId>
-            </plugin>
-            -->
+                  <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pdf-plugin</artifactId>
+                  </plugin>
+                  -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
