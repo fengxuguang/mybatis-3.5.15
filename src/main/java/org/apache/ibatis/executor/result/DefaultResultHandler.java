@@ -24,31 +24,32 @@ import org.apache.ibatis.session.ResultHandler;
 
 /**
  * 默认结果处理器
+ *
  * @author Clinton Begin
  */
 public class DefaultResultHandler implements ResultHandler<Object> {
-    
-    /**
-     * list 集合保存对象
-     */
-    private final List<Object> list;
-    
-    public DefaultResultHandler() {
-        list = new ArrayList<>();
-    }
-    
-    @SuppressWarnings("unchecked")
-    public DefaultResultHandler(ObjectFactory objectFactory) {
-        list = objectFactory.create(List.class);
-    }
-    
-    @Override
-    public void handleResult(ResultContext<?> context) {
-        list.add(context.getResultObject());
-    }
-    
-    public List<Object> getResultList() {
-        return list;
-    }
-    
+
+	/**
+	 * list 集合保存对象
+	 */
+	private final List<Object> list;
+
+	public DefaultResultHandler() {
+		list = new ArrayList<>();
+	}
+
+	@SuppressWarnings("unchecked")
+	public DefaultResultHandler(ObjectFactory objectFactory) {
+		list = objectFactory.create(List.class);
+	}
+
+	@Override
+	public void handleResult(ResultContext<?> context) {
+		list.add(context.getResultObject());
+	}
+
+	public List<Object> getResultList() {
+		return list;
+	}
+
 }

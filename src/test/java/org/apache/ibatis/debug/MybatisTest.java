@@ -34,54 +34,54 @@ import org.junit.Test;
  */
 public class MybatisTest {
 
-    private SqlSession sqlSession;
+	private SqlSession sqlSession;
 
-    private UserMapper userMapper;
+	private UserMapper userMapper;
 
-    @Before
-    public void before() throws Exception {
-        // 加载配置文件
-        InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+	@Before
+	public void before() throws Exception {
+		// 加载配置文件
+		InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
 
-        // 获取 SqlSessionFactory
-        SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+		// 获取 SqlSessionFactory
+		SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 
-        // 获取 SqlSession
-        sqlSession = sessionFactory.openSession();
+		// 获取 SqlSession
+		sqlSession = sessionFactory.openSession();
 
-        userMapper = sqlSession.getMapper(UserMapper.class);
-    }
+		userMapper = sqlSession.getMapper(UserMapper.class);
+	}
 
-    @After
-    public void after() {
-        if (sqlSession != null) {
-            sqlSession.close();
-        }
-    }
+	@After
+	public void after() {
+		if (sqlSession != null) {
+			sqlSession.close();
+		}
+	}
 
-    @Test
-    public void testSelectUserById() throws Exception {
-        User user = userMapper.selectUserById("101");
-        System.out.println("user = " + user);
-    }
+	@Test
+	public void testSelectUserById() throws Exception {
+		User user = userMapper.selectUserById("101");
+		System.out.println("user = " + user);
+	}
 
-    @Test
-    public void testInsert() {
-        User user = new User();
-        user.setId(105);
-        user.setName("test0909");
-        user.setCreateDate(new Date());
-        user.setUpdateDate(new Date());
-        int ret = userMapper.insertUserInfo(user);
-        System.out.println("ret = " + ret);
+	@Test
+	public void testInsert() {
+		User user = new User();
+		user.setId(105);
+		user.setName("test0909");
+		user.setCreateDate(new Date());
+		user.setUpdateDate(new Date());
+		int ret = userMapper.insertUserInfo(user);
+		System.out.println("ret = " + ret);
 
-        sqlSession.commit();
-    }
+		sqlSession.commit();
+	}
 
-    @Test
-    public void testSelectAll() {
-        List<User> users = userMapper.selectAll();
-        users.forEach(System.out::println);
-    }
+	@Test
+	public void testSelectAll() {
+		List<User> users = userMapper.selectAll();
+		users.forEach(System.out::println);
+	}
 
 }

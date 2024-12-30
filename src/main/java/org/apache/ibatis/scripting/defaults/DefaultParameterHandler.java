@@ -37,73 +37,73 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  * @author Eduardo Macarron
  */
 public class DefaultParameterHandler implements ParameterHandler {
-    
-    private final TypeHandlerRegistry typeHandlerRegistry;
-    
-    private final MappedStatement mappedStatement;
-    private final Object parameterObject;
-    private final BoundSql boundSql;
-    private final Configuration configuration;
-    
-    public DefaultParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
-        this.mappedStatement = mappedStatement;
-        this.configuration = mappedStatement.getConfiguration();
-        this.typeHandlerRegistry = mappedStatement.getConfiguration().getTypeHandlerRegistry();
-        this.parameterObject = parameterObject;
-        this.boundSql = boundSql;
-    }
-    
-    @Override
-    public Object getParameterObject() {
-        return parameterObject;
-    }
-    
-    @Override
-    public void setParameters(PreparedStatement ps) {
-        ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
-        // 取出 SQL 中的参数映射列表
-        List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
-        // 检测 parameterMappings 集合是否为空
-        if (parameterMappings != null) {
-            MetaObject metaObject = null;
-            for (int i = 0; i < parameterMappings.size(); i++) {
-                ParameterMapping parameterMapping = parameterMappings.get(i);
-                // 过滤掉存储过程中的输出参数
-                if (parameterMapping.getMode() != ParameterMode.OUT) {
-                    // 记录绑定的实参
-                    Object value;
-                    // 获取参数名称
-                    String propertyName = parameterMapping.getProperty();
-                    if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
-                        value = boundSql.getAdditionalParameter(propertyName);
-                    } else if (parameterObject == null) {
-                        value = null;
-                    } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
-                        // 实参可以直接通过 TypeHandler 转换成 JdbcType
-                        value = parameterObject;
-                    } else {
-                        if (metaObject == null) {
-                            metaObject = configuration.newMetaObject(parameterObject);
-                        }
-                        value = metaObject.getValue(propertyName);
-                    }
-                    
-                    // 获取 parameterMapping 中设置的 TypeHandler 对象
-                    TypeHandler typeHandler = parameterMapping.getTypeHandler();
-                    JdbcType jdbcType = parameterMapping.getJdbcType();
-                    if (value == null && jdbcType == null) {
-                        // 不同类型的 set 方法不同, 所以委派给子类的 setParameter() 方法
-                        jdbcType = configuration.getJdbcTypeForNull();
-                    }
-                    try {
-                        // 调用 PreparedStatement.set* 方法为 SQL 语句绑定相应的实参
-                        typeHandler.setParameter(ps, i + 1, value, jdbcType);
-                    } catch (TypeException | SQLException e) {
-                        throw new TypeException("Could not set parameters for mapping: " + parameterMapping + ". Cause: " + e, e);
-                    }
-                }
-            }
-        }
-    }
-    
+
+	private final TypeHandlerRegistry typeHandlerRegistry;
+
+	private final MappedStatement mappedStatement;
+	private final Object parameterObject;
+	private final BoundSql boundSql;
+	private final Configuration configuration;
+
+	public DefaultParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+		this.mappedStatement = mappedStatement;
+		this.configuration = mappedStatement.getConfiguration();
+		this.typeHandlerRegistry = mappedStatement.getConfiguration().getTypeHandlerRegistry();
+		this.parameterObject = parameterObject;
+		this.boundSql = boundSql;
+	}
+
+	@Override
+	public Object getParameterObject() {
+		return parameterObject;
+	}
+
+	@Override
+	public void setParameters(PreparedStatement ps) {
+		ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
+		// 取出 SQL 中的参数映射列表
+		List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+		// 检测 parameterMappings 集合是否为空
+		if (parameterMappings != null) {
+			MetaObject metaObject = null;
+			for (int i = 0; i < parameterMappings.size(); i++) {
+				ParameterMapping parameterMapping = parameterMappings.get(i);
+				// 过滤掉存储过程中的输出参数
+				if (parameterMapping.getMode() != ParameterMode.OUT) {
+					// 记录绑定的实参
+					Object value;
+					// 获取参数名称
+					String propertyName = parameterMapping.getProperty();
+					if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
+						value = boundSql.getAdditionalParameter(propertyName);
+					} else if (parameterObject == null) {
+						value = null;
+					} else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+						// 实参可以直接通过 TypeHandler 转换成 JdbcType
+						value = parameterObject;
+					} else {
+						if (metaObject == null) {
+							metaObject = configuration.newMetaObject(parameterObject);
+						}
+						value = metaObject.getValue(propertyName);
+					}
+
+					// 获取 parameterMapping 中设置的 TypeHandler 对象
+					TypeHandler typeHandler = parameterMapping.getTypeHandler();
+					JdbcType jdbcType = parameterMapping.getJdbcType();
+					if (value == null && jdbcType == null) {
+						// 不同类型的 set 方法不同, 所以委派给子类的 setParameter() 方法
+						jdbcType = configuration.getJdbcTypeForNull();
+					}
+					try {
+						// 调用 PreparedStatement.set* 方法为 SQL 语句绑定相应的实参
+						typeHandler.setParameter(ps, i + 1, value, jdbcType);
+					} catch (TypeException | SQLException e) {
+						throw new TypeException("Could not set parameters for mapping: " + parameterMapping + ". Cause: " + e, e);
+					}
+				}
+			}
+		}
+	}
+
 }

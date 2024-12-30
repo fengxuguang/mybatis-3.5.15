@@ -28,35 +28,35 @@ import org.apache.ibatis.transaction.TransactionFactory;
  * Creates {@link JdbcTransaction} instances.
  *
  * @author Clinton Begin
- *
  * @see JdbcTransaction
  */
 public class JdbcTransactionFactory implements TransactionFactory {
-    
-    private boolean skipSetAutoCommitOnClose;
-    
-    @Override
-    public void setProperties(Properties props) {
-        if (props == null) {
-            return;
-        }
-        String value = props.getProperty("skipSetAutoCommitOnClose");
-        if (value != null) {
-            skipSetAutoCommitOnClose = Boolean.parseBoolean(value);
-        }
-    }
-    
-    @Override
-    public Transaction newTransaction(Connection conn) {
-        return new JdbcTransaction(conn);
-    }
-    
-    /**
-     * 创建 JdbcTransaction 对象
-     * @return Transaction 对象
-     */
-    @Override
-    public Transaction newTransaction(DataSource ds, TransactionIsolationLevel level, boolean autoCommit) {
-        return new JdbcTransaction(ds, level, autoCommit, skipSetAutoCommitOnClose);
-    }
+
+	private boolean skipSetAutoCommitOnClose;
+
+	@Override
+	public void setProperties(Properties props) {
+		if (props == null) {
+			return;
+		}
+		String value = props.getProperty("skipSetAutoCommitOnClose");
+		if (value != null) {
+			skipSetAutoCommitOnClose = Boolean.parseBoolean(value);
+		}
+	}
+
+	@Override
+	public Transaction newTransaction(Connection conn) {
+		return new JdbcTransaction(conn);
+	}
+
+	/**
+	 * 创建 JdbcTransaction 对象
+	 *
+	 * @return Transaction 对象
+	 */
+	@Override
+	public Transaction newTransaction(DataSource ds, TransactionIsolationLevel level, boolean autoCommit) {
+		return new JdbcTransaction(ds, level, autoCommit, skipSetAutoCommitOnClose);
+	}
 }

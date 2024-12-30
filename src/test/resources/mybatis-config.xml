@@ -23,7 +23,8 @@
     <!--数据库属性-->
     <properties>
         <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://192.162.11.191:3306/service_center?useUnicode=true&amp;characterEncoding=utf-8&amp;serverTimezone=GMT%2B8"/>
+        <property name="url"
+                  value="jdbc:mysql://192.162.11.191:3306/service_center?useUnicode=true&amp;characterEncoding=utf-8&amp;serverTimezone=GMT%2B8"/>
         <property name="username" value="root"/>
         <property name="password" value="DCbasic&amp;2022"/>
     </properties>

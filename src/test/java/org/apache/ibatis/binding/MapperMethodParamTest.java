@@ -37,49 +37,49 @@ import org.junit.jupiter.api.Test;
 
 class MapperMethodParamTest {
 
-  private static SqlSessionFactory sqlSessionFactory;
+	private static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeAll
-  static void setup() throws Exception {
-    DataSource dataSource = BaseDataTest.createUnpooledDataSource(BaseDataTest.BLOG_PROPERTIES);
-    BaseDataTest.runScript(dataSource, "org/apache/ibatis/binding/paramtest-schema.sql");
-    TransactionFactory transactionFactory = new JdbcTransactionFactory();
-    Environment environment = new Environment("Production", transactionFactory, dataSource);
-    Configuration configuration = new Configuration(environment);
-    configuration.addMapper(Mapper.class);
-    sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
-  }
+	@BeforeAll
+	static void setup() throws Exception {
+		DataSource dataSource = BaseDataTest.createUnpooledDataSource(BaseDataTest.BLOG_PROPERTIES);
+		BaseDataTest.runScript(dataSource, "org/apache/ibatis/binding/paramtest-schema.sql");
+		TransactionFactory transactionFactory = new JdbcTransactionFactory();
+		Environment environment = new Environment("Production", transactionFactory, dataSource);
+		Configuration configuration = new Configuration(environment);
+		configuration.addMapper(Mapper.class);
+		sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+	}
 
-  @Test
-  void parameterNameIsSizeAndTypeIsLong() {
-    try (SqlSession session = sqlSessionFactory.openSession()) {
-      Mapper mapper = session.getMapper(Mapper.class);
-      mapper.insert("foo", Long.MAX_VALUE);
-      assertThat(mapper.selectSize("foo")).isEqualTo(Long.MAX_VALUE);
-    }
-  }
+	@Test
+	void parameterNameIsSizeAndTypeIsLong() {
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			Mapper mapper = session.getMapper(Mapper.class);
+			mapper.insert("foo", Long.MAX_VALUE);
+			assertThat(mapper.selectSize("foo")).isEqualTo(Long.MAX_VALUE);
+		}
+	}
 
-  @Test
-  void parameterNameIsSizeUsingHashMap() {
-    try (SqlSession session = sqlSessionFactory.openSession()) {
-      HashMap<String, Object> params = new HashMap<>();
-      params.put("id", "foo");
-      params.put("size", Long.MAX_VALUE);
-      Mapper mapper = session.getMapper(Mapper.class);
-      mapper.insertUsingHashMap(params);
-      assertThat(mapper.selectSize("foo")).isEqualTo(Long.MAX_VALUE);
-    }
-  }
+	@Test
+	void parameterNameIsSizeUsingHashMap() {
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			HashMap<String, Object> params = new HashMap<>();
+			params.put("id", "foo");
+			params.put("size", Long.MAX_VALUE);
+			Mapper mapper = session.getMapper(Mapper.class);
+			mapper.insertUsingHashMap(params);
+			assertThat(mapper.selectSize("foo")).isEqualTo(Long.MAX_VALUE);
+		}
+	}
 
-  interface Mapper {
-    @Insert("insert into param_test (id, size) values(#{id}, #{size})")
-    void insert(@Param("id") String id, @Param("size") long size);
+	interface Mapper {
+		@Insert("insert into param_test (id, size) values(#{id}, #{size})")
+		void insert(@Param("id") String id, @Param("size") long size);
 
-    @Insert("insert into param_test (id, size) values(#{id}, #{size})")
-    void insertUsingHashMap(HashMap<String, Object> params);
+		@Insert("insert into param_test (id, size) values(#{id}, #{size})")
+		void insertUsingHashMap(HashMap<String, Object> params);
 
-    @Select("select size from param_test where id = #{id}")
-    long selectSize(@Param("id") String id);
-  }
+		@Select("select size from param_test where id = #{id}")
+		long selectSize(@Param("id") String id);
+	}
 
 }

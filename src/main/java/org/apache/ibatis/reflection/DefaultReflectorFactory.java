@@ -24,38 +24,38 @@ import org.apache.ibatis.util.MapUtil;
  * Mybatis 默认的反射工厂实现
  */
 public class DefaultReflectorFactory implements ReflectorFactory {
-    /**
-     * 是否允许缓存标识, 默认 true
-     */
-    private boolean classCacheEnabled = true;
-    /**
-     * Reflector 对象的缓存容器
-     */
-    private final ConcurrentMap<Class<?>, Reflector> reflectorMap = new ConcurrentHashMap<>();
-    
-    public DefaultReflectorFactory() {
-    }
-    
-    @Override
-    public boolean isClassCacheEnabled() {
-        return classCacheEnabled;
-    }
-    
-    @Override
-    public void setClassCacheEnabled(boolean classCacheEnabled) {
-        this.classCacheEnabled = classCacheEnabled;
-    }
-    
-    @Override
-    public Reflector findForClass(Class<?> type) {
-        // 允许缓存
-        if (classCacheEnabled) {
-            // 缓存中存在, 优先从 reflectorMap 缓存中获取, 缓存中不存在, 创建 Reflector 对象返回并添加进 reflectorMap 缓存中
-            // synchronized (type) removed see issue #461
-            return MapUtil.computeIfAbsent(reflectorMap, type, Reflector::new);
-        }
-        // 不允许缓存, 创建 Reflector 对象并返回
-        return new Reflector(type);
-    }
-    
+	/**
+	 * 是否允许缓存标识, 默认 true
+	 */
+	private boolean classCacheEnabled = true;
+	/**
+	 * Reflector 对象的缓存容器
+	 */
+	private final ConcurrentMap<Class<?>, Reflector> reflectorMap = new ConcurrentHashMap<>();
+
+	public DefaultReflectorFactory() {
+	}
+
+	@Override
+	public boolean isClassCacheEnabled() {
+		return classCacheEnabled;
+	}
+
+	@Override
+	public void setClassCacheEnabled(boolean classCacheEnabled) {
+		this.classCacheEnabled = classCacheEnabled;
+	}
+
+	@Override
+	public Reflector findForClass(Class<?> type) {
+		// 允许缓存
+		if (classCacheEnabled) {
+			// 缓存中存在, 优先从 reflectorMap 缓存中获取, 缓存中不存在, 创建 Reflector 对象返回并添加进 reflectorMap 缓存中
+			// synchronized (type) removed see issue #461
+			return MapUtil.computeIfAbsent(reflectorMap, type, Reflector::new);
+		}
+		// 不允许缓存, 创建 Reflector 对象并返回
+		return new Reflector(type);
+	}
+
 }

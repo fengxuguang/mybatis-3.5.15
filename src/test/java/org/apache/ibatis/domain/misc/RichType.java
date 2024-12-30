@@ -22,50 +22,51 @@ import java.util.Map;
 
 public class RichType {
 
-  private RichType richType;
+	private RichType richType;
 
-  private String richField;
+	private String richField;
 
-  private String richProperty;
+	private String richProperty;
 
-  private Map richMap = new HashMap<>();
+	private Map richMap = new HashMap<>();
 
-  private List richList = new ArrayList<>() {
-    private static final long serialVersionUID = 1L;
-    {
-      add("bar");
-    }
-  };
+	private List richList = new ArrayList<>() {
+		private static final long serialVersionUID = 1L;
 
-  public RichType getRichType() {
-    return richType;
-  }
+		{
+			add("bar");
+		}
+	};
 
-  public void setRichType(RichType richType) {
-    this.richType = richType;
-  }
+	public RichType getRichType() {
+		return richType;
+	}
 
-  public String getRichProperty() {
-    return richProperty;
-  }
+	public void setRichType(RichType richType) {
+		this.richType = richType;
+	}
 
-  public void setRichProperty(String richProperty) {
-    this.richProperty = richProperty;
-  }
+	public String getRichProperty() {
+		return richProperty;
+	}
 
-  public List getRichList() {
-    return richList;
-  }
+	public void setRichProperty(String richProperty) {
+		this.richProperty = richProperty;
+	}
 
-  public void setRichList(List richList) {
-    this.richList = richList;
-  }
+	public List getRichList() {
+		return richList;
+	}
 
-  public Map getRichMap() {
-    return richMap;
-  }
+	public void setRichList(List richList) {
+		this.richList = richList;
+	}
 
-  public void setRichMap(Map richMap) {
-    this.richMap = richMap;
-  }
+	public Map getRichMap() {
+		return richMap;
+	}
+
+	public void setRichMap(Map richMap) {
+		this.richMap = richMap;
+	}
 }

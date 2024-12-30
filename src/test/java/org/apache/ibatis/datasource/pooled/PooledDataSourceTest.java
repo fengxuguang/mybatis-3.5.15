@@ -32,130 +32,130 @@ import org.junit.jupiter.api.Test;
 
 class PooledDataSourceTest {
 
-  PooledDataSource dataSource;
+	PooledDataSource dataSource;
 
-  @BeforeEach
-  void beforeEach() {
-    dataSource = new PooledDataSource("org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:multipledrivers", "sa", "");
-  }
+	@BeforeEach
+	void beforeEach() {
+		dataSource = new PooledDataSource("org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:multipledrivers", "sa", "");
+	}
 
-  @Test
-  void shouldBlockUntilConnectionIsAvailableInPooledDataSource() throws Exception {
-    dataSource.setPoolMaximumCheckoutTime(20000);
+	@Test
+	void shouldBlockUntilConnectionIsAvailableInPooledDataSource() throws Exception {
+		dataSource.setPoolMaximumCheckoutTime(20000);
 
-    List<Connection> connections = new ArrayList<>();
-    CountDownLatch latch = new CountDownLatch(1);
+		List<Connection> connections = new ArrayList<>();
+		CountDownLatch latch = new CountDownLatch(1);
 
-    for (int i = 0; i < dataSource.getPoolMaximumActiveConnections(); i++) {
-      connections.add(dataSource.getConnection());
-    }
+		for (int i = 0; i < dataSource.getPoolMaximumActiveConnections(); i++) {
+			connections.add(dataSource.getConnection());
+		}
 
-    new Thread(() -> {
-      try {
-        dataSource.getConnection();
-        latch.countDown();
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }).start();
+		new Thread(() -> {
+			try {
+				dataSource.getConnection();
+				latch.countDown();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}).start();
 
-    assertFalse(latch.await(1000, TimeUnit.MILLISECONDS));
-    connections.get(0).close();
-    assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
-  }
+		assertFalse(latch.await(1000, TimeUnit.MILLISECONDS));
+		connections.get(0).close();
+		assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+	}
 
-  @Test
-  void PoppedConnectionShouldBeNotEqualToClosedConnection() throws Exception {
-    Connection connectionToClose = dataSource.getConnection();
-    CountDownLatch latch = new CountDownLatch(1);
+	@Test
+	void PoppedConnectionShouldBeNotEqualToClosedConnection() throws Exception {
+		Connection connectionToClose = dataSource.getConnection();
+		CountDownLatch latch = new CountDownLatch(1);
 
-    new Thread(() -> {
-      try {
-        latch.await();
-        assertNotEquals(connectionToClose, dataSource.getConnection());
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }).start();
+		new Thread(() -> {
+			try {
+				latch.await();
+				assertNotEquals(connectionToClose, dataSource.getConnection());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}).start();
 
-    connectionToClose.close();
-    latch.countDown();
-  }
+		connectionToClose.close();
+		latch.countDown();
+	}
 
-  @Test
-  void shouldEnsureCorrectIdleConnectionCount() throws Exception {
-    dataSource.setPoolMaximumActiveConnections(10);
-    dataSource.setPoolMaximumIdleConnections(5);
+	@Test
+	void shouldEnsureCorrectIdleConnectionCount() throws Exception {
+		dataSource.setPoolMaximumActiveConnections(10);
+		dataSource.setPoolMaximumIdleConnections(5);
 
-    PoolState poolState = dataSource.getPoolState();
-    List<Connection> connections = new ArrayList<>();
+		PoolState poolState = dataSource.getPoolState();
+		List<Connection> connections = new ArrayList<>();
 
-    for (int i = 0; i < dataSource.getPoolMaximumActiveConnections(); i++) {
-      connections.add(dataSource.getConnection());
-    }
+		for (int i = 0; i < dataSource.getPoolMaximumActiveConnections(); i++) {
+			connections.add(dataSource.getConnection());
+		}
 
-    assertEquals(0, poolState.getIdleConnectionCount());
+		assertEquals(0, poolState.getIdleConnectionCount());
 
-    for (int i = 0; i < dataSource.getPoolMaximumActiveConnections(); i++) {
-      connections.get(i).close();
-    }
+		for (int i = 0; i < dataSource.getPoolMaximumActiveConnections(); i++) {
+			connections.get(i).close();
+		}
 
-    assertEquals(dataSource.getPoolMaximumIdleConnections(), poolState.getIdleConnectionCount());
+		assertEquals(dataSource.getPoolMaximumIdleConnections(), poolState.getIdleConnectionCount());
 
-    for (int i = 0; i < dataSource.getPoolMaximumIdleConnections(); i++) {
-      dataSource.getConnection();
-    }
+		for (int i = 0; i < dataSource.getPoolMaximumIdleConnections(); i++) {
+			dataSource.getConnection();
+		}
 
-    assertEquals(0, poolState.getIdleConnectionCount());
-  }
+		assertEquals(0, poolState.getIdleConnectionCount());
+	}
 
-  @Test
-  void connectionShouldBeAvailableAfterMaximumCheckoutTime() throws Exception {
-    dataSource.setPoolMaximumCheckoutTime(1000);
-    dataSource.setPoolTimeToWait(500);
+	@Test
+	void connectionShouldBeAvailableAfterMaximumCheckoutTime() throws Exception {
+		dataSource.setPoolMaximumCheckoutTime(1000);
+		dataSource.setPoolTimeToWait(500);
 
-    int poolMaximumActiveConnections = dataSource.getPoolMaximumActiveConnections();
-    CountDownLatch latch = new CountDownLatch(1);
+		int poolMaximumActiveConnections = dataSource.getPoolMaximumActiveConnections();
+		CountDownLatch latch = new CountDownLatch(1);
 
-    for (int i = 0; i < poolMaximumActiveConnections; i++) {
-      dataSource.getConnection();
-    }
+		for (int i = 0; i < poolMaximumActiveConnections; i++) {
+			dataSource.getConnection();
+		}
 
-    new Thread(() -> {
-      try {
-        dataSource.getConnection();
-        latch.countDown();
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }).start();
+		new Thread(() -> {
+			try {
+				dataSource.getConnection();
+				latch.countDown();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}).start();
 
-    assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
-  }
+		assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
+	}
 
-  @Test
-  void forceCloseAllShouldRemoveAllActiveAndIdleConnection() throws SQLException {
-    dataSource.setPoolMaximumActiveConnections(10);
-    dataSource.setPoolMaximumIdleConnections(5);
+	@Test
+	void forceCloseAllShouldRemoveAllActiveAndIdleConnection() throws SQLException {
+		dataSource.setPoolMaximumActiveConnections(10);
+		dataSource.setPoolMaximumIdleConnections(5);
 
-    PoolState poolState = dataSource.getPoolState();
-    List<Connection> connections = new ArrayList<>();
+		PoolState poolState = dataSource.getPoolState();
+		List<Connection> connections = new ArrayList<>();
 
-    for (int i = 0; i < dataSource.getPoolMaximumActiveConnections(); i++) {
-      connections.add(dataSource.getConnection());
-    }
+		for (int i = 0; i < dataSource.getPoolMaximumActiveConnections(); i++) {
+			connections.add(dataSource.getConnection());
+		}
 
-    for (int i = 0; i < dataSource.getPoolMaximumIdleConnections(); i++) {
-      connections.get(i).close();
-    }
+		for (int i = 0; i < dataSource.getPoolMaximumIdleConnections(); i++) {
+			connections.get(i).close();
+		}
 
-    assertEquals(dataSource.getPoolMaximumActiveConnections() - poolState.getIdleConnectionCount(),
-        poolState.getActiveConnectionCount());
-    assertEquals(dataSource.getPoolMaximumIdleConnections(), poolState.getIdleConnectionCount());
+		assertEquals(dataSource.getPoolMaximumActiveConnections() - poolState.getIdleConnectionCount(),
+				poolState.getActiveConnectionCount());
+		assertEquals(dataSource.getPoolMaximumIdleConnections(), poolState.getIdleConnectionCount());
 
-    dataSource.forceCloseAll();
+		dataSource.forceCloseAll();
 
-    assertEquals(0, poolState.getActiveConnectionCount());
-    assertEquals(0, poolState.getIdleConnectionCount());
-  }
+		assertEquals(0, poolState.getActiveConnectionCount());
+		assertEquals(0, poolState.getIdleConnectionCount());
+	}
 }

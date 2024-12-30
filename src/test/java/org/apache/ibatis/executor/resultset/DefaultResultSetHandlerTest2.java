@@ -51,158 +51,163 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DefaultResultSetHandlerTest2 {
 
-  @Spy
-  private ImpatientResultSet rs;
-  @Mock
-  private Statement stmt;
-  @Mock
-  protected ResultSetMetaData rsmd;
-  @Mock
-  private Connection conn;
-  @Mock
-  private DatabaseMetaData dbmd;
+	@Spy
+	private ImpatientResultSet rs;
+	@Mock
+	private Statement stmt;
+	@Mock
+	protected ResultSetMetaData rsmd;
+	@Mock
+	private Connection conn;
+	@Mock
+	private DatabaseMetaData dbmd;
 
-  @Test
-  void shouldNotCallNextOnClosedResultSet_SimpleResult() throws Exception {
-    final Configuration config = new Configuration();
-    final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    final MappedStatement ms = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT)
-            .resultMaps(new ArrayList<ResultMap>() {
-              private static final long serialVersionUID = 1L;
-              {
-                add(new ResultMap.Builder(config, "testMap", HashMap.class, new ArrayList<ResultMapping>() {
-                  private static final long serialVersionUID = 1L;
-                  {
-                    add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(Integer.class)).build());
-                  }
-                }).build());
-              }
-            }).build();
+	@Test
+	void shouldNotCallNextOnClosedResultSet_SimpleResult() throws Exception {
+		final Configuration config = new Configuration();
+		final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
+		final MappedStatement ms = new MappedStatement.Builder(config, "testSelect",
+				new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT)
+				                           .resultMaps(new ArrayList<ResultMap>() {
+					                           private static final long serialVersionUID = 1L;
 
-    final Executor executor = null;
-    final ParameterHandler parameterHandler = null;
-    final ResultHandler<?> resultHandler = null;
-    final BoundSql boundSql = null;
-    final RowBounds rowBounds = new RowBounds(5, 1);
-    final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
-        resultHandler, boundSql, rowBounds);
+					                           {
+						                           add(new ResultMap.Builder(config, "testMap", HashMap.class, new ArrayList<ResultMapping>() {
+							                           private static final long serialVersionUID = 1L;
 
-    when(stmt.getResultSet()).thenReturn(rs);
-    when(rsmd.getColumnCount()).thenReturn(1);
-    when(rsmd.getColumnLabel(1)).thenReturn("id");
-    when(rsmd.getColumnType(1)).thenReturn(Types.INTEGER);
-    when(rsmd.getColumnClassName(1)).thenReturn(Integer.class.getCanonicalName());
-    when(stmt.getConnection()).thenReturn(conn);
-    when(conn.getMetaData()).thenReturn(dbmd);
-    when(dbmd.supportsMultipleResultSets()).thenReturn(false); // for simplicity.
+							                           {
+								                           add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(Integer.class)).build());
+							                           }
+						                           }).build());
+					                           }
+				                           }).build();
 
-    final List<Object> results = resultSetHandler.handleResultSets(stmt);
-    assertEquals(0, results.size());
-  }
+		final Executor executor = null;
+		final ParameterHandler parameterHandler = null;
+		final ResultHandler<?> resultHandler = null;
+		final BoundSql boundSql = null;
+		final RowBounds rowBounds = new RowBounds(5, 1);
+		final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
+				resultHandler, boundSql, rowBounds);
 
-  @Test
-  void shouldNotCallNextOnClosedResultSet_NestedResult() throws Exception {
-    final Configuration config = new Configuration();
-    final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    final ResultMap nestedResultMap = new ResultMap.Builder(config, "roleMap", HashMap.class,
-        new ArrayList<ResultMapping>() {
-          private static final long serialVersionUID = 1L;
-          {
-            add(new ResultMapping.Builder(config, "role", "role", registry.getTypeHandler(String.class)).build());
-          }
-        }).build();
-    config.addResultMap(nestedResultMap);
-    final MappedStatement ms = new MappedStatement.Builder(config, "selectPerson",
-        new StaticSqlSource(config, "select person..."), SqlCommandType.SELECT).resultMaps(new ArrayList<ResultMap>() {
-          private static final long serialVersionUID = 1L;
-          {
-            add(new ResultMap.Builder(config, "personMap", HashMap.class, new ArrayList<ResultMapping>() {
-              private static final long serialVersionUID = 1L;
-              {
-                add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(Integer.class)).build());
-                add(new ResultMapping.Builder(config, "roles").nestedResultMapId("roleMap").build());
-              }
-            }).build());
-          }
-        }).resultOrdered(true).build();
+		when(stmt.getResultSet()).thenReturn(rs);
+		when(rsmd.getColumnCount()).thenReturn(1);
+		when(rsmd.getColumnLabel(1)).thenReturn("id");
+		when(rsmd.getColumnType(1)).thenReturn(Types.INTEGER);
+		when(rsmd.getColumnClassName(1)).thenReturn(Integer.class.getCanonicalName());
+		when(stmt.getConnection()).thenReturn(conn);
+		when(conn.getMetaData()).thenReturn(dbmd);
+		when(dbmd.supportsMultipleResultSets()).thenReturn(false); // for simplicity.
 
-    final Executor executor = null;
-    final ParameterHandler parameterHandler = null;
-    final ResultHandler<?> resultHandler = null;
-    final BoundSql boundSql = null;
-    final RowBounds rowBounds = new RowBounds(5, 1);
-    final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
-        resultHandler, boundSql, rowBounds);
+		final List<Object> results = resultSetHandler.handleResultSets(stmt);
+		assertEquals(0, results.size());
+	}
 
-    when(stmt.getResultSet()).thenReturn(rs);
-    when(rsmd.getColumnCount()).thenReturn(2);
-    when(rsmd.getColumnLabel(1)).thenReturn("id");
-    when(rsmd.getColumnType(1)).thenReturn(Types.INTEGER);
-    when(rsmd.getColumnClassName(1)).thenReturn(Integer.class.getCanonicalName());
+	@Test
+	void shouldNotCallNextOnClosedResultSet_NestedResult() throws Exception {
+		final Configuration config = new Configuration();
+		final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
+		final ResultMap nestedResultMap = new ResultMap.Builder(config, "roleMap", HashMap.class,
+				new ArrayList<ResultMapping>() {
+					private static final long serialVersionUID = 1L;
 
-    final List<Object> results = resultSetHandler.handleResultSets(stmt);
-    assertEquals(0, results.size());
-  }
+					{
+						add(new ResultMapping.Builder(config, "role", "role", registry.getTypeHandler(String.class)).build());
+					}
+				}).build();
+		config.addResultMap(nestedResultMap);
+		final MappedStatement ms = new MappedStatement.Builder(config, "selectPerson",
+				new StaticSqlSource(config, "select person..."), SqlCommandType.SELECT).resultMaps(new ArrayList<ResultMap>() {
+			private static final long serialVersionUID = 1L;
 
-  /*
-   * Simulate a driver that closes ResultSet automatically when next() returns false (e.g. DB2).
-   */
-  protected abstract class ImpatientResultSet implements ResultSet {
-    private int rowIndex = -1;
-    private List<Map<String, Object>> rows = new ArrayList<>();
+			{
+				add(new ResultMap.Builder(config, "personMap", HashMap.class, new ArrayList<ResultMapping>() {
+					private static final long serialVersionUID = 1L;
 
-    protected ImpatientResultSet() {
-      Map<String, Object> row = new HashMap<>();
-      row.put("id", 1);
-      row.put("role", "CEO");
-      rows.add(row);
-    }
+					{
+						add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(Integer.class)).build());
+						add(new ResultMapping.Builder(config, "roles").nestedResultMapId("roleMap").build());
+					}
+				}).build());
+			}
+		}).resultOrdered(true).build();
 
-    @Override
-    public boolean next() throws SQLException {
-      throwIfClosed();
-      return ++rowIndex < rows.size();
-    }
+		final Executor executor = null;
+		final ParameterHandler parameterHandler = null;
+		final ResultHandler<?> resultHandler = null;
+		final BoundSql boundSql = null;
+		final RowBounds rowBounds = new RowBounds(5, 1);
+		final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
+				resultHandler, boundSql, rowBounds);
 
-    @Override
-    public boolean isClosed() {
-      return rowIndex >= rows.size();
-    }
+		when(stmt.getResultSet()).thenReturn(rs);
+		when(rsmd.getColumnCount()).thenReturn(2);
+		when(rsmd.getColumnLabel(1)).thenReturn("id");
+		when(rsmd.getColumnType(1)).thenReturn(Types.INTEGER);
+		when(rsmd.getColumnClassName(1)).thenReturn(Integer.class.getCanonicalName());
 
-    @Override
-    public String getString(String columnLabel) throws SQLException {
-      throwIfClosed();
-      return (String) rows.get(rowIndex).get(columnLabel);
-    }
+		final List<Object> results = resultSetHandler.handleResultSets(stmt);
+		assertEquals(0, results.size());
+	}
 
-    @Override
-    public int getInt(String columnLabel) throws SQLException {
-      throwIfClosed();
-      return (Integer) rows.get(rowIndex).get(columnLabel);
-    }
+	/*
+	 * Simulate a driver that closes ResultSet automatically when next() returns false (e.g. DB2).
+	 */
+	protected abstract class ImpatientResultSet implements ResultSet {
+		private int rowIndex = -1;
+		private List<Map<String, Object>> rows = new ArrayList<>();
 
-    @Override
-    public boolean wasNull() throws SQLException {
-      throwIfClosed();
-      return false;
-    }
+		protected ImpatientResultSet() {
+			Map<String, Object> row = new HashMap<>();
+			row.put("id", 1);
+			row.put("role", "CEO");
+			rows.add(row);
+		}
 
-    @Override
-    public ResultSetMetaData getMetaData() {
-      return rsmd;
-    }
+		@Override
+		public boolean next() throws SQLException {
+			throwIfClosed();
+			return ++rowIndex < rows.size();
+		}
 
-    @Override
-    public int getType() throws SQLException {
-      throwIfClosed();
-      return ResultSet.TYPE_FORWARD_ONLY;
-    }
+		@Override
+		public boolean isClosed() {
+			return rowIndex >= rows.size();
+		}
 
-    private void throwIfClosed() throws SQLException {
-      if (rowIndex >= rows.size()) {
-        throw new SQLException("Invalid operation: result set is closed.");
-      }
-    }
-  }
+		@Override
+		public String getString(String columnLabel) throws SQLException {
+			throwIfClosed();
+			return (String) rows.get(rowIndex).get(columnLabel);
+		}
+
+		@Override
+		public int getInt(String columnLabel) throws SQLException {
+			throwIfClosed();
+			return (Integer) rows.get(rowIndex).get(columnLabel);
+		}
+
+		@Override
+		public boolean wasNull() throws SQLException {
+			throwIfClosed();
+			return false;
+		}
+
+		@Override
+		public ResultSetMetaData getMetaData() {
+			return rsmd;
+		}
+
+		@Override
+		public int getType() throws SQLException {
+			throwIfClosed();
+			return ResultSet.TYPE_FORWARD_ONLY;
+		}
+
+		private void throwIfClosed() throws SQLException {
+			if (rowIndex >= rows.size()) {
+				throw new SQLException("Invalid operation: result set is closed.");
+			}
+		}
+	}
 }

@@ -35,43 +35,43 @@ import org.apache.ibatis.logging.LogFactory;
  */
 public class VendorDatabaseIdProvider implements DatabaseIdProvider {
 
-  private Properties properties;
+	private Properties properties;
 
-  @Override
-  public String getDatabaseId(DataSource dataSource) {
-    if (dataSource == null) {
-      throw new NullPointerException("dataSource cannot be null");
-    }
-    try {
-      return getDatabaseName(dataSource);
-    } catch (Exception e) {
-      LogHolder.log.error("Could not get a databaseId from dataSource", e);
-    }
-    return null;
-  }
+	@Override
+	public String getDatabaseId(DataSource dataSource) {
+		if (dataSource == null) {
+			throw new NullPointerException("dataSource cannot be null");
+		}
+		try {
+			return getDatabaseName(dataSource);
+		} catch (Exception e) {
+			LogHolder.log.error("Could not get a databaseId from dataSource", e);
+		}
+		return null;
+	}
 
-  @Override
-  public void setProperties(Properties p) {
-    this.properties = p;
-  }
+	@Override
+	public void setProperties(Properties p) {
+		this.properties = p;
+	}
 
-  private String getDatabaseName(DataSource dataSource) throws SQLException {
-    String productName = getDatabaseProductName(dataSource);
-    if (this.properties != null) {
-      return properties.entrySet().stream().filter(entry -> productName.contains((String) entry.getKey()))
-          .map(entry -> (String) entry.getValue()).findFirst().orElse(null);
-    }
-    return productName;
-  }
+	private String getDatabaseName(DataSource dataSource) throws SQLException {
+		String productName = getDatabaseProductName(dataSource);
+		if (this.properties != null) {
+			return properties.entrySet().stream().filter(entry -> productName.contains((String) entry.getKey()))
+					       .map(entry -> (String) entry.getValue()).findFirst().orElse(null);
+		}
+		return productName;
+	}
 
-  private String getDatabaseProductName(DataSource dataSource) throws SQLException {
-    try (Connection con = dataSource.getConnection()) {
-      return con.getMetaData().getDatabaseProductName();
-    }
-  }
+	private String getDatabaseProductName(DataSource dataSource) throws SQLException {
+		try (Connection con = dataSource.getConnection()) {
+			return con.getMetaData().getDatabaseProductName();
+		}
+	}
 
-  private static class LogHolder {
-    private static final Log log = LogFactory.getLog(VendorDatabaseIdProvider.class);
-  }
+	private static class LogHolder {
+		private static final Log log = LogFactory.getLog(VendorDatabaseIdProvider.class);
+	}
 
 }

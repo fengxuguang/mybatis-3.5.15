@@ -24,42 +24,38 @@ import org.apache.ibatis.debug.entity.User;
  */
 public interface UserMapper {
 
-  List<User> selectAll();
+	List<User> selectAll();
 
-  /**
-   * 根据id查询用户信息
-   *
-   * @param id
-   *
-   * @return
-   */
-  User selectUserById(String id);
+	/**
+	 * 根据id查询用户信息
+	 *
+	 * @param id
+	 * @return
+	 */
+	User selectUserById(String id);
 
-  /**
-   * 新增用户
-   *
-   * @param user
-   *
-   * @return
-   */
-  int insertUserInfo(User user);
+	/**
+	 * 新增用户
+	 *
+	 * @param user
+	 * @return
+	 */
+	int insertUserInfo(User user);
 
-  /**
-   * 更新用户
-   *
-   * @param user
-   *
-   * @return
-   */
-  int updateUserInfo(User user);
+	/**
+	 * 更新用户
+	 *
+	 * @param user
+	 * @return
+	 */
+	int updateUserInfo(User user);
 
-  /**
-   * 删除用户
-   *
-   * @param user
-   *
-   * @return
-   */
-  int deleteUserInfo(User user);
+	/**
+	 * 删除用户
+	 *
+	 * @param user
+	 * @return
+	 */
+	int deleteUserInfo(User user);
 
 }

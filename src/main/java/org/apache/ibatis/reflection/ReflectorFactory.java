@@ -19,23 +19,26 @@ package org.apache.ibatis.reflection;
  * 反射工厂, 实现了 Reflector 对象的创建和缓存
  */
 public interface ReflectorFactory {
-    
-    /**
-     * ReflectorFactory 对象是否会缓存 Reflector 对象
-     * @return true 表示会缓存 Reflector 对象, false 表示不会缓存 Reflector 对象
-     */
-    boolean isClassCacheEnabled();
-    
-    /**
-     * 设置是否缓存 Reflector 对象
-     * @param classCacheEnabled true 表示缓存 Reflector 对象, false 表示不缓存 Reflector 对象
-     */
-    void setClassCacheEnabled(boolean classCacheEnabled);
-    
-    /**
-     * 创建指定 Class 对应的 Reflector 对象
-     * @param type 类型
-     * @return Reflector 对象
-     */
-    Reflector findForClass(Class<?> type);
+
+	/**
+	 * ReflectorFactory 对象是否会缓存 Reflector 对象
+	 *
+	 * @return true 表示会缓存 Reflector 对象, false 表示不会缓存 Reflector 对象
+	 */
+	boolean isClassCacheEnabled();
+
+	/**
+	 * 设置是否缓存 Reflector 对象
+	 *
+	 * @param classCacheEnabled true 表示缓存 Reflector 对象, false 表示不缓存 Reflector 对象
+	 */
+	void setClassCacheEnabled(boolean classCacheEnabled);
+
+	/**
+	 * 创建指定 Class 对应的 Reflector 对象
+	 *
+	 * @param type 类型
+	 * @return Reflector 对象
+	 */
+	Reflector findForClass(Class<?> type);
 }

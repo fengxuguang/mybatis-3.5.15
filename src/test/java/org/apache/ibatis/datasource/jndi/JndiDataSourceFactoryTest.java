@@ -36,70 +36,71 @@ import org.junit.jupiter.api.Test;
 
 class JndiDataSourceFactoryTest extends BaseDataTest {
 
-  private static final String TEST_INITIAL_CONTEXT_FACTORY = MockContextFactory.class.getName();
-  private static final String TEST_INITIAL_CONTEXT = "/mypath/path/";
-  private static final String TEST_DATA_SOURCE = "myDataSource";
-  private UnpooledDataSource expectedDataSource;
+	private static final String TEST_INITIAL_CONTEXT_FACTORY = MockContextFactory.class.getName();
+	private static final String TEST_INITIAL_CONTEXT = "/mypath/path/";
+	private static final String TEST_DATA_SOURCE = "myDataSource";
+	private UnpooledDataSource expectedDataSource;
 
-  @BeforeEach
-  void setup() throws Exception {
-    expectedDataSource = createUnpooledDataSource(BLOG_PROPERTIES);
-  }
+	@BeforeEach
+	void setup() throws Exception {
+		expectedDataSource = createUnpooledDataSource(BLOG_PROPERTIES);
+	}
 
-  @Test
-  void shouldRetrieveDataSourceFromJNDI() {
-    createJndiDataSource();
-    JndiDataSourceFactory factory = new JndiDataSourceFactory();
-    factory.setProperties(new Properties() {
-      private static final long serialVersionUID = 1L;
-      {
-        setProperty(JndiDataSourceFactory.ENV_PREFIX + Context.INITIAL_CONTEXT_FACTORY, TEST_INITIAL_CONTEXT_FACTORY);
-        setProperty(JndiDataSourceFactory.INITIAL_CONTEXT, TEST_INITIAL_CONTEXT);
-        setProperty(JndiDataSourceFactory.DATA_SOURCE, TEST_DATA_SOURCE);
-      }
-    });
-    DataSource actualDataSource = factory.getDataSource();
-    assertEquals(expectedDataSource, actualDataSource);
-  }
+	@Test
+	void shouldRetrieveDataSourceFromJNDI() {
+		createJndiDataSource();
+		JndiDataSourceFactory factory = new JndiDataSourceFactory();
+		factory.setProperties(new Properties() {
+			private static final long serialVersionUID = 1L;
 
-  private void createJndiDataSource() {
-    try {
-      Properties env = new Properties();
-      env.put(Context.INITIAL_CONTEXT_FACTORY, TEST_INITIAL_CONTEXT_FACTORY);
+			{
+				setProperty(JndiDataSourceFactory.ENV_PREFIX + Context.INITIAL_CONTEXT_FACTORY, TEST_INITIAL_CONTEXT_FACTORY);
+				setProperty(JndiDataSourceFactory.INITIAL_CONTEXT, TEST_INITIAL_CONTEXT);
+				setProperty(JndiDataSourceFactory.DATA_SOURCE, TEST_DATA_SOURCE);
+			}
+		});
+		DataSource actualDataSource = factory.getDataSource();
+		assertEquals(expectedDataSource, actualDataSource);
+	}
 
-      MockContext ctx = new MockContext(false);
-      ctx.bind(TEST_DATA_SOURCE, expectedDataSource);
+	private void createJndiDataSource() {
+		try {
+			Properties env = new Properties();
+			env.put(Context.INITIAL_CONTEXT_FACTORY, TEST_INITIAL_CONTEXT_FACTORY);
 
-      InitialContext initCtx = new InitialContext(env);
-      initCtx.bind(TEST_INITIAL_CONTEXT, ctx);
-    } catch (NamingException e) {
-      throw new DataSourceException("There was an error configuring JndiDataSourceTransactionPool. Cause: " + e, e);
-    }
-  }
+			MockContext ctx = new MockContext(false);
+			ctx.bind(TEST_DATA_SOURCE, expectedDataSource);
 
-  public static class MockContextFactory implements InitialContextFactory {
-    @Override
-    public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
-      return new MockContext(false);
-    }
-  }
+			InitialContext initCtx = new InitialContext(env);
+			initCtx.bind(TEST_INITIAL_CONTEXT, ctx);
+		} catch (NamingException e) {
+			throw new DataSourceException("There was an error configuring JndiDataSourceTransactionPool. Cause: " + e, e);
+		}
+	}
 
-  public static class MockContext extends InitialContext {
-    private static final Map<String, Object> bindings = new HashMap<>();
+	public static class MockContextFactory implements InitialContextFactory {
+		@Override
+		public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+			return new MockContext(false);
+		}
+	}
 
-    MockContext(boolean lazy) throws NamingException {
-      super(lazy);
-    }
+	public static class MockContext extends InitialContext {
+		private static final Map<String, Object> bindings = new HashMap<>();
 
-    @Override
-    public Object lookup(String name) {
-      return bindings.get(name);
-    }
+		MockContext(boolean lazy) throws NamingException {
+			super(lazy);
+		}
 
-    @Override
-    public void bind(String name, Object obj) {
-      bindings.put(name, obj);
-    }
-  }
+		@Override
+		public Object lookup(String name) {
+			return bindings.get(name);
+		}
+
+		@Override
+		public void bind(String name, Object obj) {
+			bindings.put(name, obj);
+		}
+	}
 
 }

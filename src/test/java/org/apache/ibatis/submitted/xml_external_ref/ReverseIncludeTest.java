@@ -34,53 +34,53 @@ import org.junit.jupiter.api.Test;
 
 class ReverseIncludeTest {
 
-  @Test
-  void testReverseIncludeXmlConfig() throws Exception {
-    testReverseIncludes(getSqlSessionFactoryXmlConfig());
-  }
+	@Test
+	void testReverseIncludeXmlConfig() throws Exception {
+		testReverseIncludes(getSqlSessionFactoryXmlConfig());
+	}
 
-  @Test
-  void testReverseIncludeJavaConfig() throws Exception {
-    testReverseIncludes(getSqlSessionFactoryJavaConfig());
-  }
+	@Test
+	void testReverseIncludeJavaConfig() throws Exception {
+		testReverseIncludes(getSqlSessionFactoryJavaConfig());
+	}
 
-  private void testReverseIncludes(SqlSessionFactory sqlSessionFactory) {
-    try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      ReverseIncludePersonMapper personMapper = sqlSession.getMapper(ReverseIncludePersonMapper.class);
-      Person person = personMapper.select(1);
-      assertEquals((Integer) 1, person.getId());
-      assertEquals("John", person.getName());
-    }
-  }
+	private void testReverseIncludes(SqlSessionFactory sqlSessionFactory) {
+		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+			ReverseIncludePersonMapper personMapper = sqlSession.getMapper(ReverseIncludePersonMapper.class);
+			Person person = personMapper.select(1);
+			assertEquals((Integer) 1, person.getId());
+			assertEquals("John", person.getName());
+		}
+	}
 
-  private SqlSessionFactory getSqlSessionFactoryXmlConfig() throws Exception {
-    try (Reader configReader = Resources
-        .getResourceAsReader("org/apache/ibatis/submitted/xml_external_ref/ReverseIncludeMapperConfig.xml")) {
-      SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configReader);
+	private SqlSessionFactory getSqlSessionFactoryXmlConfig() throws Exception {
+		try (Reader configReader = Resources
+				                           .getResourceAsReader("org/apache/ibatis/submitted/xml_external_ref/ReverseIncludeMapperConfig.xml")) {
+			SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configReader);
 
-      initDb(sqlSessionFactory);
+			initDb(sqlSessionFactory);
 
-      return sqlSessionFactory;
-    }
-  }
+			return sqlSessionFactory;
+		}
+	}
 
-  private SqlSessionFactory getSqlSessionFactoryJavaConfig() throws Exception {
-    Configuration configuration = new Configuration();
-    Environment environment = new Environment("development", new JdbcTransactionFactory(),
-        new UnpooledDataSource("org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:xmlextref", null));
-    configuration.setEnvironment(environment);
-    configuration.addMapper(ReverseIncludePersonMapper.class);
+	private SqlSessionFactory getSqlSessionFactoryJavaConfig() throws Exception {
+		Configuration configuration = new Configuration();
+		Environment environment = new Environment("development", new JdbcTransactionFactory(),
+				new UnpooledDataSource("org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:xmlextref", null));
+		configuration.setEnvironment(environment);
+		configuration.addMapper(ReverseIncludePersonMapper.class);
 
-    SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 
-    initDb(sqlSessionFactory);
+		initDb(sqlSessionFactory);
 
-    return sqlSessionFactory;
-  }
+		return sqlSessionFactory;
+	}
 
-  private static void initDb(SqlSessionFactory sqlSessionFactory) throws IOException, SQLException {
-    BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/xml_external_ref/CreateDB.sql");
-  }
+	private static void initDb(SqlSessionFactory sqlSessionFactory) throws IOException, SQLException {
+		BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
+				"org/apache/ibatis/submitted/xml_external_ref/CreateDB.sql");
+	}
 
 }
