@@ -26,7 +26,18 @@ public enum ResultSetType {
 	 *
 	 * @since 3.5.0
 	 */
-	DEFAULT(-1), FORWARD_ONLY(ResultSet.TYPE_FORWARD_ONLY), SCROLL_INSENSITIVE(ResultSet.TYPE_SCROLL_INSENSITIVE),
+	DEFAULT(-1),
+    /**
+     * 1003
+     */
+    FORWARD_ONLY(ResultSet.TYPE_FORWARD_ONLY),
+    /**
+     * 1004
+     */
+    SCROLL_INSENSITIVE(ResultSet.TYPE_SCROLL_INSENSITIVE),
+    /**
+     * 1005
+     */
 	SCROLL_SENSITIVE(ResultSet.TYPE_SCROLL_SENSITIVE);
 
 	private final int value;

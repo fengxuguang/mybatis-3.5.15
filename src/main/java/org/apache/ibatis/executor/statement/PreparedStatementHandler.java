@@ -45,7 +45,10 @@ public class PreparedStatementHandler extends BaseStatementHandler {
 	@Override
 	public int update(Statement statement) throws SQLException {
 		PreparedStatement ps = (PreparedStatement) statement;
+        // 原生 JDBC 操作
 		ps.execute();
+
+        // 获取执行结果
 		int rows = ps.getUpdateCount();
 		Object parameterObject = boundSql.getParameterObject();
 		KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
@@ -76,6 +79,9 @@ public class PreparedStatementHandler extends BaseStatementHandler {
 		return resultSetHandler.handleCursorResultSets(ps);
 	}
 
+    /**
+     * 实例化 Statement
+     */
 	@Override
 	protected Statement instantiateStatement(Connection connection) throws SQLException {
 		// 获取待执行的 SQL 语句

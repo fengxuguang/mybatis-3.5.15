@@ -40,11 +40,13 @@ public class DefaultResultHandler implements ResultHandler<Object> {
 
 	@SuppressWarnings("unchecked")
 	public DefaultResultHandler(ObjectFactory objectFactory) {
+        // 通过 ObjectFactory 对象实例化 List 属性
 		list = objectFactory.create(List.class);
 	}
 
 	@Override
 	public void handleResult(ResultContext<?> context) {
+        // 将结果上下文添加进 list 中存储
 		list.add(context.getResultObject());
 	}
 

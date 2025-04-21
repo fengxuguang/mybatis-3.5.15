@@ -67,17 +67,25 @@ public class Reflector {
 
 	public Reflector(Class<?> clazz) {
 		type = clazz;
+        // 如果存在, 记录无参构造方法
 		addDefaultConstructor(clazz);
+        // 获取类中方法集合
 		Method[] classMethods = getClassMethods(clazz);
 		if (isRecord(type)) {
 			addRecordGetMethods(classMethods);
 		} else {
+            // 记录字段名与 get 方法、get 方法返回值的映射关系
 			addGetMethods(classMethods);
+            // 记录字段名与 set 方法、set 方法参数的映射关系
 			addSetMethods(classMethods);
+            // 针对没有 getter/setter 方法的字段，通过 field 对象的反射来设置和读取字段值
 			addFields(clazz);
 		}
+        // 可读的字段名
 		readablePropertyNames = getMethods.keySet().toArray(new String[0]);
+        // 可写的字段名
 		writablePropertyNames = setMethods.keySet().toArray(new String[0]);
+        // 保存一份所有字段名大写与原始字段名的映射
 		for (String propName : readablePropertyNames) {
 			caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
 		}
@@ -99,8 +107,11 @@ public class Reflector {
 
 	private void addGetMethods(Method[] methods) {
 		Map<String, List<Method>> conflictingGetters = new HashMap<>();
-		Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
+		Arrays.stream(methods)
+            .filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
 				.forEach(m -> addMethodConflict(conflictingGetters, PropertyNamer.methodToProperty(m.getName()), m));
+
+
 		resolveGetterConflicts(conflictingGetters);
 	}
 

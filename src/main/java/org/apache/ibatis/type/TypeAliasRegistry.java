@@ -174,6 +174,7 @@ public class TypeAliasRegistry {
 
 	/**
 	 * 注册别名
+     * 默认为简单类名, 优先从 Alias 注解获取
 	 *
 	 * @param type 类名
 	 */

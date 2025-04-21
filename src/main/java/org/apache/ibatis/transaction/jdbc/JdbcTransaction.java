@@ -41,6 +41,9 @@ public class JdbcTransaction implements Transaction {
 	protected Connection connection;
 	protected DataSource dataSource;
 	protected TransactionIsolationLevel level;
+    /**
+     * 是否自动提交
+     */
 	protected boolean autoCommit;
 	protected boolean skipSetAutoCommitOnClose;
 
@@ -141,6 +144,7 @@ public class JdbcTransaction implements Transaction {
 		if (log.isDebugEnabled()) {
 			log.debug("Opening JDBC Connection");
 		}
+        // 获取连接
 		connection = dataSource.getConnection();
 		if (level != null) {
 			connection.setTransactionIsolation(level.getLevel());

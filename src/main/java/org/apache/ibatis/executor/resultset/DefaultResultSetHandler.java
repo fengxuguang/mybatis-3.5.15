@@ -1054,12 +1054,19 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
 	private void handleRowValuesForNestedResultMap(ResultSetWrapper rsw, ResultMap resultMap,
 	                                               ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
+        // 默认上下文对象
 		final DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
 		ResultSet resultSet = rsw.getResultSet();
+
+        // 根据 RowBounds 中的 offset 定位到指定的记录
 		skipRows(resultSet, rowBounds);
 		Object rowValue = previousRowValue;
+
+        // 检测已经处理的行数是否已经达到上限 (RowBounds, limit) 以及 ResultSet 中是否还有可以处理的记录
 		while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
+            // 根据该行记录以及 ResultMap.discriminator, 决定映射使用的 ResultMap
 			final ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
+
 			final CacheKey rowKey = createRowKey(discriminatedResultMap, rsw, null);
 			Object partialObject = nestedResultObjects.get(rowKey);
 			// issue #577 && #542
@@ -1068,10 +1075,12 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 					nestedResultObjects.clear();
 					storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
 				}
+                // 根据最终确定的 ResultMap 对 ResultSet 中的该行记录进行映射, 得到映射后的结果对象
 				rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, null, partialObject);
 			} else {
 				rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, null, partialObject);
 				if (partialObject == null) {
+                    // 将映射创建的结果对象添加到 ResultHandler.resultList 中保存
 					storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
 				}
 			}

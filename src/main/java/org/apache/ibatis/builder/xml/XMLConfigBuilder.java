@@ -117,7 +117,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 	 * @return Configuration
 	 */
 	public Configuration parse() {
-		// 判断是否已经解析过, 若已经解析过了则抛出异常, 根据 parsed 变量的值判断是否已经完成了对 mybatis-confgi.xml 配置文件的解析
+		// 判断是否已经解析过, 若已经解析过了则抛出异常, 根据 parsed 变量的值判断是否已经完成了对 mybatis-config.xml 配置文件的解析
 		if (parsed) {
 			throw new BuilderException("Each XMLConfigBuilder can only be used once.");
 		}

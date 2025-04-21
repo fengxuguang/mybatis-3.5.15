@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+class MapperProxy
+interface InvocationHandler
+interface Serializable
+
+Serializable <|-- MapperProxy
+InvocationHandler <|-- MapperProxy
+
+@enduml

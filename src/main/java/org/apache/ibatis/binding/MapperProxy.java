@@ -55,7 +55,11 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 	private final Class<T> mapperInterface;
 
 	/**
-	 * 用于缓存 MapperMethod 对象 key 是 mapper 接口中方法对应的 Method 对象, value 是对应的 MapperMethod 对象, MapperMethod 对象会完成 SQL 参数转换及 SQL
+	 * 用于缓存 MapperMethod 对象,
+     * key 是 mapper 接口中方法对应的 Method 对象
+     * value 是对应的 MapperMethod 对象
+     * MapperMethod 对象会完成 SQL 参数转换及 SQL
+     *
 	 * 语句的执行功能
 	 */
 	private final Map<Method, MapperMethodInvoker> methodCache;

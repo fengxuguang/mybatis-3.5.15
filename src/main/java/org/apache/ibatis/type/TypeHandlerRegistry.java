@@ -54,10 +54,15 @@ import org.apache.ibatis.session.Configuration;
  */
 public final class TypeHandlerRegistry {
 
+    /**
+     * JdbcType - TypeHandler 对象
+     * 用于将 Jdbc 类型转为 Java 类型
+     */
 	private final Map<JdbcType, TypeHandler<?>> jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
 
 	/**
 	 * 记录了 Java 类型向指定 JdbcType 转换时, 需要使用 TypeHandler 对象
+     * 用于将 Java 类型转为指定的 Jdbc 类型
 	 */
 	private final Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap = new ConcurrentHashMap<>();
 	private final TypeHandler<Object> unknownTypeHandler;
