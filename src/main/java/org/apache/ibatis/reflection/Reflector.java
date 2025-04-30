@@ -55,12 +55,24 @@ public class Reflector {
 
 	private static final MethodHandle isRecordMethodHandle = getIsRecordMethodHandle();
 	private final Class<?> type;
+    // get 属性列表
 	private final String[] readablePropertyNames;
+    // set 属性列表
 	private final String[] writablePropertyNames;
+
+    // set 方法列表
 	private final Map<String, Invoker> setMethods = new HashMap<>();
+
+    // get 方法列表
 	private final Map<String, Invoker> getMethods = new HashMap<>();
+
+    // set 类型列表
 	private final Map<String, Class<?>> setTypes = new HashMap<>();
+
+    // get 类型列表
 	private final Map<String, Class<?>> getTypes = new HashMap<>();
+
+    // 构造函数
 	private Constructor<?> defaultConstructor;
 
 	private final Map<String, String> caseInsensitivePropertyMap = new HashMap<>();

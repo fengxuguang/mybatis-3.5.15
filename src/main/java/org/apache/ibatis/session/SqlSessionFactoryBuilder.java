@@ -26,6 +26,10 @@ import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
 
 /**
+ * 整个 Mybatis 入口
+ * <p>
+ * 提供建造者工厂, 包装 XML 解析处理, 并返回对应 SqlSessionFactory 处理类
+ *
  * Builds {@link SqlSession} instances.
  *
  * @author Clinton Begin
@@ -95,6 +99,9 @@ public class SqlSessionFactoryBuilder {
 		}
 	}
 
+    /**
+     * 默认返回 DefaultSqlSessionFactory
+     */
 	public SqlSessionFactory build(Configuration config) {
 		return new DefaultSqlSessionFactory(config);
 	}

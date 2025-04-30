@@ -27,6 +27,10 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 
 /**
+ * 映射器注册机
+ * <p>
+ * 自动扫描包下接口并把每个接口类映射的代理类全部存入映射器代理的 ConcurrentHashMap 中
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss

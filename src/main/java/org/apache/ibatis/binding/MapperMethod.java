@@ -313,6 +313,9 @@ public class MapperMethod {
 		}
 	}
 
+    /**
+     * 方法签名
+     */
 	public static class MethodSignature {
 
 		/**

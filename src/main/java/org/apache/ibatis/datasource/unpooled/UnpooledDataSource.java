@@ -39,16 +39,25 @@ import org.apache.ibatis.io.Resources;
 public class UnpooledDataSource implements DataSource {
 
 	private ClassLoader driverClassLoader;
+    // 驱动配置, 也可以扩展属性信息 driver.encoding=UTF8
 	private Properties driverProperties;
+    // 驱动注册器
 	private static final Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
 
+    // 驱动
 	private String driver;
+    // DB 连接地址
 	private String url;
+    // 账号
 	private String username;
+    // 密码
 	private String password;
 
+    // 是否自动提交
 	private Boolean autoCommit;
+    // 事务级别
 	private Integer defaultTransactionIsolationLevel;
+    // 默认网络超时
 	private Integer defaultNetworkTimeout;
 
 	static {
@@ -227,6 +236,9 @@ public class UnpooledDataSource implements DataSource {
 		return connection;
 	}
 
+    /**
+     * 初始化驱动
+     */
 	private synchronized void initializeDriver() throws SQLException {
 		if (!registeredDrivers.containsKey(driver)) {
 			Class<?> driverType;

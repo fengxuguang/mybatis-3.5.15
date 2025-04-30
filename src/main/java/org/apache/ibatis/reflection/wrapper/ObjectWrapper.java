@@ -22,6 +22,8 @@ import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
+ * 对象包装器
+ *
  * @author Clinton Begin
  */
 public interface ObjectWrapper {
@@ -30,18 +32,39 @@ public interface ObjectWrapper {
 
 	void set(PropertyTokenizer prop, Object value);
 
+    /**
+     * 查找属性
+     */
 	String findProperty(String name, boolean useCamelCaseMapping);
 
+    /**
+     * 取得 getter 的名字列表
+     */
 	String[] getGetterNames();
 
+    /**
+     * 取得 setter 的名字列表
+     */
 	String[] getSetterNames();
 
+    /**
+     * 取得 setter 的类型
+     */
 	Class<?> getSetterType(String name);
 
+    /**
+     * 取得 getter 的类型
+     */
 	Class<?> getGetterType(String name);
 
+    /**
+     * 判断是否有 set 方法
+     */
 	boolean hasSetter(String name);
 
+    /**
+     * 判断是否有 get 方法
+     */
 	boolean hasGetter(String name);
 
 	MetaObject instantiatePropertyValue(String name, PropertyTokenizer prop, ObjectFactory objectFactory);

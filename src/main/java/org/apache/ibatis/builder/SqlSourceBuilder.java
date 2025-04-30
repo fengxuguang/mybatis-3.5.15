@@ -50,6 +50,8 @@ public class SqlSourceBuilder extends BaseBuilder {
 		} else {
 			sql = parser.parse(originalSql);
 		}
+
+        // 返回静态 SQL
 		return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
 	}
 
@@ -90,7 +92,11 @@ public class SqlSourceBuilder extends BaseBuilder {
 			return "?";
 		}
 
+        /**
+         * 构建参数映射
+         */
 		private ParameterMapping buildParameterMapping(String content) {
+            // 先解析参数映射, 就是转化成一个 HashMap | #{name, jdbcType=VARCHAR}
 			Map<String, String> propertiesMap = parseParameterMapping(content);
 			String property = propertiesMap.get("property");
 			Class<?> propertyType;

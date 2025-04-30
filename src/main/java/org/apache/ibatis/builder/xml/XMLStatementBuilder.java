@@ -66,7 +66,7 @@ public class XMLStatementBuilder extends BaseBuilder {
 			return;
 		}
 
-		// 根据 SQL 节点的名称决定 SqlCommandType 类型
+		// 根据 SQL 节点的名称决定 SqlCommandType 类型 select|insert|update|delete
 		String nodeName = context.getNode().getNodeName();
 		SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
 		boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
@@ -78,9 +78,11 @@ public class XMLStatementBuilder extends BaseBuilder {
 		XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
 		includeParser.applyIncludes(context.getNode());
 
+        // 参数类型
 		String parameterType = context.getStringAttribute("parameterType");
 		Class<?> parameterTypeClass = resolveClass(parameterType);
 
+        // 获取默认语言驱动器
 		String lang = context.getStringAttribute("lang");
 		LanguageDriver langDriver = getLanguageDriver(lang);
 
@@ -105,6 +107,8 @@ public class XMLStatementBuilder extends BaseBuilder {
 		Integer fetchSize = context.getIntAttribute("fetchSize");
 		Integer timeout = context.getIntAttribute("timeout");
 		String parameterMap = context.getStringAttribute("parameterMap");
+
+        // 结果类型
 		String resultType = context.getStringAttribute("resultType");
 		Class<?> resultTypeClass = resolveClass(resultType);
 		String resultMap = context.getStringAttribute("resultMap");
@@ -186,6 +190,9 @@ public class XMLStatementBuilder extends BaseBuilder {
 		}
 	}
 
+    /**
+     * 节点数据库 ID 与当前数据库 ID 是否匹配
+     */
 	private boolean databaseIdMatchesCurrent(String id, String databaseId, String requiredDatabaseId) {
 		if (requiredDatabaseId != null) {
 			return requiredDatabaseId.equals(databaseId);

@@ -24,8 +24,17 @@ import java.sql.Connection;
  */
 public interface SqlSessionFactory {
 
+    /**
+     * 打开一个 session
+     * @return SqlSession
+     */
 	SqlSession openSession();
 
+    /**
+     * 打开一个 session
+     * @param autoCommit 设置事务是否自动提交
+     * @return SqlSession
+     */
 	SqlSession openSession(boolean autoCommit);
 
 	SqlSession openSession(Connection connection);

@@ -31,7 +31,11 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.util.MapUtil;
 
 /**
+ * 映射器代理类
+ * <p>
  * 实现 InvocationHandler 实现动态代理
+ * <p>
+ * 通过 MapperProxy 代理类包装对数据库的操作, 当前类的创建通过 MapperProxyFactory#newInstance 创建
  *
  * @author Clinton Begin
  * @author Eduardo Macarron

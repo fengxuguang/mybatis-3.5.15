@@ -28,14 +28,31 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
+ * 元对象封装
+ *
  * @author Clinton Begin
  */
 public class MetaObject {
 
+    /**
+     * 原对象
+     */
 	private final Object originalObject;
+    /**
+     * 对象包装器
+     */
 	private final ObjectWrapper objectWrapper;
+    /**
+     * 对象工厂
+     */
 	private final ObjectFactory objectFactory;
+    /**
+     * 对象包装工厂
+     */
 	private final ObjectWrapperFactory objectWrapperFactory;
+    /**
+     * 反射工厂
+     */
 	private final ReflectorFactory reflectorFactory;
 
 	private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory,
@@ -46,14 +63,19 @@ public class MetaObject {
 		this.reflectorFactory = reflectorFactory;
 
 		if (object instanceof ObjectWrapper) {
+            // 如果对象本身已经是 ObjectWrapper 类型, 则直接赋给 objectWrapper
 			this.objectWrapper = (ObjectWrapper) object;
 		} else if (objectWrapperFactory.hasWrapperFor(object)) {
+            // 如果有包装器, 调用 ObjectWrapperFactory.getWrapperFor
 			this.objectWrapper = objectWrapperFactory.getWrapperFor(this, object);
 		} else if (object instanceof Map) {
+            // 如果是 Map 类型, 返回 MapWrapper
 			this.objectWrapper = new MapWrapper(this, (Map) object);
 		} else if (object instanceof Collection) {
+            // 如果是 Collection 类型, 返回 CollectionWrapper
 			this.objectWrapper = new CollectionWrapper(this, (Collection) object);
 		} else {
+            // 默认返回 BeanWrapper
 			this.objectWrapper = new BeanWrapper(this, object);
 		}
 	}
@@ -61,6 +83,7 @@ public class MetaObject {
 	public static MetaObject forObject(Object object, ObjectFactory objectFactory,
 	                                   ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
 		if (object == null) {
+            // 处理一下 null, 将 null 包装起来
 			return SystemMetaObject.NULL_META_OBJECT;
 		}
 		return new MetaObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
@@ -110,6 +133,9 @@ public class MetaObject {
 		return objectWrapper.hasGetter(name);
 	}
 
+    /**
+     * 取值
+     */
 	public Object getValue(String name) {
 		PropertyTokenizer prop = new PropertyTokenizer(name);
 		if (!prop.hasNext()) {
@@ -117,11 +143,17 @@ public class MetaObject {
 		}
 		MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
 		if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
+            // 如果上层是 null 了, 那就结束返回 null
 			return null;
 		}
+
+        // 继续看下一层, 递归调用 getValue
 		return metaValue.getValue(prop.getChildren());
 	}
 
+    /**
+     * 设值
+     */
 	public void setValue(String name, Object value) {
 		PropertyTokenizer prop = new PropertyTokenizer(name);
 		if (prop.hasNext()) {
@@ -129,12 +161,17 @@ public class MetaObject {
 			if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
 				if (value == null) {
 					// don't instantiate child path if value is null
+                    // 如果上层是 null, 结束返回 null
 					return;
 				}
+                // 否则需要 new 一个, 委派给 ObjectWrapper.instantiatePropertyValue
 				metaValue = objectWrapper.instantiatePropertyValue(name, prop, objectFactory);
 			}
+
+            // 递归调用 setValue
 			metaValue.setValue(prop.getChildren(), value);
 		} else {
+            // 委派给 ObjectWrapper.set
 			objectWrapper.set(prop, value);
 		}
 	}

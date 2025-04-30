@@ -53,6 +53,9 @@ import org.apache.ibatis.type.JdbcType;
  */
 public class XMLConfigBuilder extends BaseBuilder {
 
+    /**
+     * 判断配置文件 是否已解析
+     */
 	private boolean parsed;
 	private final XPathParser parser;
 	private String environment;

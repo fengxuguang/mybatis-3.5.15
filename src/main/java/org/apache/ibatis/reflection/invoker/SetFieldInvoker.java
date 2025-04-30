@@ -20,9 +20,12 @@ import java.lang.reflect.Field;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * set 方法的调用者处理
+ *
  * @author Clinton Begin
  */
 public class SetFieldInvoker implements Invoker {
+
 	private final Field field;
 
 	public SetFieldInvoker(Field field) {
@@ -40,6 +43,8 @@ public class SetFieldInvoker implements Invoker {
 			field.setAccessible(true);
 			field.set(target, args[0]);
 		}
+
+        // 因为 set 只是设置值, 所以这里只返回一个 null 就可以了
 		return null;
 	}
 
